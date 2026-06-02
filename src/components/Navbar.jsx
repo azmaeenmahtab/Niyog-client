@@ -1,0 +1,108 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import whitelogo from "@/assets/whitelogo.png";
+
+export default function Navbar() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { label: "Browse Jobs", href: "#" },
+    { label: "Company", href: "#" },
+    { label: "Pricing", href: "#" },
+  ];
+
+  return (
+    <nav className="sticky top-0 z-40 w-full bg-transparent px-4 pt-4">
+      <header className="mx-auto flex w-full max-w-[1350px] items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
+        <div className="flex items-center gap-3">
+          <button
+            className="rounded-full p-2 text-white/80 transition hover:bg-white/10 hover:text-white md:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={isMenuOpen}
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <Image
+              src={whitelogo}
+              alt="Niyog"
+              className="h-8 w-auto"
+              priority
+            />
+          </div>
+        </div>
+        <ul className="hidden items-center gap-8 text-[15px] text-white/85 md:flex">
+          {navItems.map((item) => (
+            <li key={item.label}>
+              <Link href={item.href} className="transition-colors hover:text-white">
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden items-center gap-4 md:flex">
+          <Link
+            href="#"
+            className="border-r border-white/20 pr-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white"
+          >
+            Sign In
+          </Link>
+          <Link
+            href="#"
+            className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(111,98,255,0.35)] transition hover:brightness-110"
+          >
+            Get Started
+          </Link>
+        </div>
+      </header>
+      {isMenuOpen && (
+        <div className="mx-auto mt-2 w-full max-w-275 rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.28)] md:hidden">
+          <ul className="flex flex-col gap-1 text-white/85">
+            {navItems.map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="block rounded-xl px-3 py-3 transition hover:bg-white/10 hover:text-white">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+            <li className="mt-2 border-t border-white/10 pt-3">
+              <Link href="#" className="block rounded-xl px-3 py-3 text-[#6e63ff] transition hover:bg-white/10 hover:text-white">
+                Sign In
+              </Link>
+            </li>
+            <li>
+              <Link href="#" className="mt-1 block rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-center font-semibold text-white shadow-[0_10px_24px_rgba(111,98,255,0.35)] transition hover:brightness-110">
+                Get Started
+              </Link>
+            </li>
+          </ul>
+        </div>
+      )}
+    </nav>
+  );
+}
