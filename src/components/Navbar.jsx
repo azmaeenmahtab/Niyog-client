@@ -3,7 +3,12 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { Oswald } from "next/font/google";
 import whitelogo from "@/assets/whitelogo.png";
+
+const oswald = Oswald({
+  subsets: ["latin"],
+});
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,8 +20,8 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-transparent px-4 pt-4">
-      <header className="mx-auto flex w-full max-w-[1350px] items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
+    <nav className="sticky top-0 z-40 w-full  px-4 pt-6 bg-[#050505]">
+      <header className="mx-auto flex w-full max-w-337.5 items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
         <div className="flex items-center gap-3">
           <button
             className="rounded-full p-2 text-white/80 transition hover:bg-white/10 hover:text-white md:hidden"
@@ -54,30 +59,35 @@ export default function Navbar() {
               className="h-8 w-auto"
               priority
             />
+            <span className={`${oswald.className} inline-block text-[24px] font-semibold italic tracking-[0.06em] text-white -skew-x-12`}>
+              Niyog
+            </span>
           </div>
         </div>
-        <ul className="hidden items-center gap-8 text-[15px] text-white/85 md:flex">
-          {navItems.map((item) => (
-            <li key={item.label}>
-              <Link href={item.href} className="transition-colors hover:text-white">
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="hidden items-center gap-4 md:flex">
-          <Link
-            href="#"
-            className="border-r border-white/20 pr-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="#"
-            className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(111,98,255,0.35)] transition hover:brightness-110"
-          >
-            Get Started
-          </Link>
+        <div className="ml-auto hidden items-center gap-8 md:flex">
+          <ul className="flex items-center gap-8 text-[15px] text-white/85">
+            {navItems.map((item) => (
+              <li key={item.label}>
+                <Link href={item.href} className="transition-colors hover:text-white">
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-4">
+            <Link
+              href="#"
+              className="border-l border-white/20 pl-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white"
+            >
+              Sign In
+            </Link>
+            <Link
+              href="#"
+              className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white  transition hover:brightness-110"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       </header>
       {isMenuOpen && (
