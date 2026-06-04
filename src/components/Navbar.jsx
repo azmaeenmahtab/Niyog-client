@@ -20,7 +20,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-40 w-full  px-4 pt-6 bg-[#050505]">
+    <nav className="sticky top-0 z-40 w-full  px-4 pt-6 bg-transparent">
       <header className="mx-auto flex w-full max-w-337.5 items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
         <div className="flex items-center gap-3">
           <button
