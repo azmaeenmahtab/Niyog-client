@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { useSession } from "@/lib/auth-client";
+import {authClient} from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -17,12 +19,23 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session } = useSession();
   const isLoggedIn = Boolean(session?.user);
+  const router = useRouter();
 
   const navItems = [
     { label: "Browse Jobs", href: "#" },
     { label: "Company", href: "#" },
     { label: "Pricing", href: "#" },
   ];
+
+ const handlelogout  = async () => {
+  await authClient.signOut({
+    fetchOptions: {
+      onSuccess: () => {
+        router.push("/");
+      }
+    }
+  });
+ }
 
   return (
     <nav className="sticky top-0 z-40 w-full  px-4 pt-6 bg-transparent">
@@ -80,13 +93,21 @@ export default function Navbar() {
             ))}
           </ul>
           {isLoggedIn ? (
-            <div
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/8 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
+            <div className="flex items-center gap-4">
+              <button onClick={handlelogout} className="border-l border-white/20 pl-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white cursor-pointer">
+                Logout
+              </button>
+              <div
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 cursor-pointer bg-white/8 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
               title={session?.user?.name || session?.user?.email || "Account"}
               aria-label="Logged in account"
             >
+              
               <FontAwesomeIcon icon={faCircleUser} className="h-auto w-5" />
             </div>
+            
+            </div>
+            
           ) : (
             <div className="flex items-center gap-4">
               <Link

@@ -207,7 +207,7 @@ export default function SignupPage() {
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
           </button>
 
-          <div className="my-6 flex items-center gap-4">
+          <div className="my-4 flex items-center gap-4">
             <span className="h-px flex-1 bg-white/10" />
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/35">
               or
@@ -215,7 +215,7 @@ export default function SignupPage() {
             <span className="h-px flex-1 bg-white/10" />
           </div>
 
-          <form className="space-y-5" noValidate onSubmit={handleEmailSignup}>
+          <form className="space-y-4" noValidate onSubmit={handleEmailSignup}>
             <div>
               <label htmlFor="name" className="text-sm font-medium text-white/78">
                 Name
