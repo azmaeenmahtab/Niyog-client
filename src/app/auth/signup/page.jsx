@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { signIn, signUp } from "@/lib/auth-client";
+import { RoleRadioGroup } from "@/components/RadioGroupRole";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -19,6 +20,8 @@ const initialValues = {
   password: "",
   confirmPassword: "",
 };
+
+const initialRole = "applicant";
 
 const initialTouched = {
   name: false,
@@ -73,6 +76,7 @@ function FieldError({ id, message }) {
 
 export default function SignupPage() {
   const [values, setValues] = useState(initialValues);
+  const [role, setRole] = useState(initialRole);
   const [touched, setTouched] = useState(initialTouched);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -118,6 +122,7 @@ export default function SignupPage() {
         name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,
+        role,
         callbackURL: "/",
       });
 
@@ -128,6 +133,7 @@ export default function SignupPage() {
 
       setSuccessMessage("Account created successfully.");
       setValues(initialValues);
+      setRole(initialRole);
       setTouched(initialTouched);
     } catch (error) {
       setFormError(error?.message || "Signup failed. Please try again.");
@@ -248,6 +254,10 @@ export default function SignupPage() {
                 placeholder="you@example.com"
               />
               <FieldError id="email-error" message={visibleErrors.email} />
+            </div>
+
+            <div className="text-white">
+              <RoleRadioGroup value={role} onChange={setRole} />
             </div>
 
             <div>

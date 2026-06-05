@@ -105,6 +105,7 @@ export default function LoginIndex() {
 
       router.replace("/");
     } catch (error) {
+      console.error("Email sign in error:", error);
       setFormError(error?.message || "Sign in failed. Please try again.");
     } finally {
       setIsSubmitting(false);
