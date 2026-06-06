@@ -3,8 +3,7 @@ dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Footer from "@/components/Footer";
-
+ 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,7 +30,7 @@ export default function RootLayout({ children }) {
         <main>
           {children}
         </main>
-        <Footer />
+        
       </body>
     </html>
   );
