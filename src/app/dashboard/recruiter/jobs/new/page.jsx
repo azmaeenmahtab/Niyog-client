@@ -24,38 +24,56 @@ export default function PostJobPage() {
     const router = useRouter();
 
     const JOB_CATEGORIES = [
-  { id: "engineering", name: "Engineering" },
-  { id: "design", name: "Design" },
-  { id: "marketing", name: "Marketing" },
-  { id: "sales", name: "Sales" },
-  { id: "finance", name: "Finance" },
-  { id: "hr", name: "HR" },
-  { id: "operations", name: "Operations" },
-  { id: "product", name: "Product" },
-  { id: "data", name: "Data" },
-  { id: "legal", name: "Legal" },
-  { id: "other", name: "Other" },
+        { id: "engineering", name: "Engineering" },
+        { id: "design", name: "Design" },
+        { id: "marketing", name: "Marketing" },
+        { id: "sales", name: "Sales" },
+        { id: "finance", name: "Finance" },
+        { id: "hr", name: "HR" },
+        { id: "operations", name: "Operations" },
+        { id: "product", name: "Product" },
+        { id: "data", name: "Data" },
+        { id: "legal", name: "Legal" },
+        { id: "other", name: "Other" },
+    ];
+    // Sets "engineering" as the default selected category
+    const [jobCategory, setJobCategory] = useState("");
+    // Finds the full object of the currently selected category
+    const selectedJobCategory = JOB_CATEGORIES.find((c) => c.id === jobCategory);
+    // console.log("Selected category object:", selectedJobCategory);
+
+
+
+    const JOB_TYPES = [
+        { id: "full-time", name: "Full-time" },
+        { id: "part-time", name: "Part-time" },
+        { id: "remote", name: "Remote" },
+        { id: "contract", name: "Contract" },
+        { id: "internship", name: "Internship" },
+    ];// Sets "full-time" as the default selected job type
+    const [jobType, setJobType] = useState("");
+
+    // Finds the full object of the currently selected job type
+    const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
+    // console.log("Selected job type object:", selectedJobType);
+
+
+
+
+    const CURRENCIES = [
+  { id: "usd", name: "USD" },
+  { id: "bdt", name: "BDT" },
+  { id: "eur", name: "EUR" },
+  { id: "gbp", name: "GBP" },
+  { id: "cad", name: "CAD" },
+  { id: "aud", name: "AUD" },
 ];
-// Sets "engineering" as the default selected category
-const [jobCategory, setJobCategory] = useState("");
-// Finds the full object of the currently selected category
-const selectedJobCategory = JOB_CATEGORIES.find((c) => c.id === jobCategory);
-// console.log("Selected category object:", selectedJobCategory);
+// Sets "usd" as the default selected currency
+const [currency, setCurrency] = useState("");
 
+// Finds the full object of the currently selected currency
+const selectedCurrency = CURRENCIES.find((c) => c.id === currency);
 
-
-const JOB_TYPES = [
-  { id: "full-time", name: "Full-time" },
-  { id: "part-time", name: "Part-time" },
-  { id: "remote", name: "Remote" },
-  { id: "contract", name: "Contract" },
-  { id: "internship", name: "Internship" },
-];// Sets "full-time" as the default selected job type
-const [jobType, setJobType] = useState("");
-
-// Finds the full object of the currently selected job type
-const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
-// console.log("Selected job type object:", selectedJobType);
 
 
 
@@ -106,8 +124,8 @@ const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
-                                    <ListBox 
-                                    selectionMode="single"
+                                    <ListBox
+                                        selectionMode="single"
                                     >
                                         {JOB_CATEGORIES.map((state) =>
                                             <ListBox.Item key={state.id} id={state.id} textValue={state.name}>
@@ -116,7 +134,7 @@ const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
                                             </ListBox.Item>
                                         )}
                                     </ListBox>
-                                    
+
                                 </Select.Popover>
                                 {errors.category && <span className="text-[12px] text-red-400">{errors.category}</span>}
                             </Select>
@@ -130,9 +148,10 @@ const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
                                 placeholder="Select Job Type"
                                 selectionMode="single"
                                 value={jobType}
-        onChange={(value) => {setJobType(value)
-                                setField("type", value);
-        }}
+                                onChange={(value) => {
+                                    setJobType(value)
+                                    setField("type", value);
+                                }}
                             >
                                 <Label className="text-white/40">Job Type</Label>
                                 <Select.Trigger>
@@ -218,8 +237,8 @@ const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
                             <Select
                                 className="w-full"
                                 placeholder="Select Currency"
-                                selectionMode="single"
-                                 selectedKeys={fields.currency ? new Set([fields.currency]) : new Set()}
+                                value={currency}
+        onChange={(value) => {  setCurrency(value); setField("currency", value); }}
                             >
 
                                 <Label className="text-white/40">Currency</Label>
@@ -228,12 +247,10 @@ const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
-                                    <ListBox selectionMode="single"
-                                    selectedKeys={fields.currency ? new Set([fields.currency]) : new Set()}
-      onSelectionChange={(value) => setField("currency", value)}>
+                                    <ListBox selectionMode="single">
                                         {CURRENCIES.map((c) =>
-                                            <ListBox.Item key={c} id={c} textValue={c}>
-                                                {c}
+                                            <ListBox.Item key={c.id} id={c.id} textValue={c.name}>
+                                                {c.name}
                                                 <ListBox.ItemIndicator />
                                             </ListBox.Item>
                                         )}
