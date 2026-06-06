@@ -9,7 +9,7 @@ const INITIAL = {
   deadline: "",
   salaryMin: "",
   salaryMax: "",
-  currency: "USD",
+  currency: "",
   city: "",
   country: "",
   responsibilities: "",
@@ -29,42 +29,50 @@ export function usePostJobForm({ onClose, company, recruiter }) {
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
+  const setField = (key, value) => {
+  setFields((prev) => ({ ...prev, [key]: value }));
+  setErrors((prev) => ({ ...prev, [key]: "" }));
+};
+
   const validate = () => {
-    const e = {};
-    if (!fields.title.trim()) e.title = "Job title is required.";
-    if (!fields.category) e.category = "Please select a category.";
-    if (!fields.type) e.type = "Please select a job type.";
+    const errs = {};
+    if (!fields.title.trim()) errs.title = "Job title is required.";
+    if (!fields.category) errs.category = "Please select a category.";
+    if (!fields.type) errs.type = "Please select a job type.";
     if (!fields.deadline) {
-      e.deadline = "Deadline is required.";
+      errs.deadline = "Deadline is required.";
     } else if (new Date(fields.deadline) <= new Date()) {
-      e.deadline = "Deadline must be a future date.";
+      errs.deadline = "Deadline must be a future date.";
     }
     if (!fields.salaryMin) {
-      e.salaryMin = "Required.";
+      errs.salaryMin = "Required.";
     } else if (isNaN(fields.salaryMin) || Number(fields.salaryMin) < 0) {
-      e.salaryMin = "Enter a valid amount.";
+      errs.salaryMin = "Enter a valid amount.";
     }
     if (!fields.salaryMax) {
-      e.salaryMax = "Required.";
+      errs.salaryMax = "Required.";
     } else if (Number(fields.salaryMax) <= Number(fields.salaryMin)) {
-      e.salaryMax = "Must be greater than min.";
+      errs.salaryMax = "Must be greater than min.";
     }
-    if (!fields.currency) e.currency = "Select a currency.";
+    if (!fields.currency) errs.currency = "Select a currency.";
     if (!isRemote) {
-      if (!fields.city.trim()) e.city = "City is required.";
-      if (!fields.country.trim()) e.country = "Country is required.";
+      if (!fields.city.trim()) errs.city = "City is required.";
+      if (!fields.country.trim()) errs.country = "Country is required.";
     }
     if (!fields.responsibilities.trim())
-      e.responsibilities = "Responsibilities are required.";
+      errs.responsibilities = "Responsibilities are required.";
     if (!fields.requirements.trim())
-      e.requirements = "Requirements are required.";
-    return e;
+      errs.requirements = "Requirements are required.";
+    return errs;
   };
 
-  const handleSubmit = async () => {
-    const e = validate();
-    if (Object.keys(e).length) {
-      setErrors(e);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validate();
+    console.log("errors:", errs);      // add this
+  console.log("fields:", fields);
+    if (Object.keys(errs).length) {
+      setErrors(errs);
       return;
     }
     setIsSubmitting(true);
@@ -97,5 +105,6 @@ router.push("/dashboard/recruiter/jobs");
     handleChange,
     handleSubmit,
     isSubmitting,
+    setField
   };
 }

@@ -2,32 +2,75 @@
 
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { Input, Selectt, Textarea, Toggle } from "@/components/Dashboard/FormField";
+import { InputCustom, Textarea, Toggle } from "@/components/Dashboard/FormField";
 import { usePostJobForm } from "./usePostJobForm";
 import { Label, ListBox, Select } from "@heroui/react";
 import { Calendar, DateField, DatePicker } from "@heroui/react";
+import { useState } from "react";
 
-const JOB_CATEGORIES = [
-    "Engineering", "Design", "Marketing", "Sales", "Finance",
-    "HR", "Operations", "Product", "Data", "Legal", "Other",
-];
-const JOB_TYPES = ["Full-time", "Part-time", "Remote", "Contract", "Internship"];
+// const JOB_CATEGORIES = [
+//     "Engineering", "Design", "Marketing", "Sales", "Finance",
+//     "HR", "Operations", "Product", "Data", "Legal", "Other",
+// ];
+
+
+
 const CURRENCIES = ["USD", "BDT", "EUR", "GBP", "CAD", "AUD"];
+
+
 
 export default function PostJobPage() {
     const { data: session } = useSession();
     const router = useRouter();
 
-    // TODO: fetch real company from your API
+    const JOB_CATEGORIES = [
+  { id: "engineering", name: "Engineering" },
+  { id: "design", name: "Design" },
+  { id: "marketing", name: "Marketing" },
+  { id: "sales", name: "Sales" },
+  { id: "finance", name: "Finance" },
+  { id: "hr", name: "HR" },
+  { id: "operations", name: "Operations" },
+  { id: "product", name: "Product" },
+  { id: "data", name: "Data" },
+  { id: "legal", name: "Legal" },
+  { id: "other", name: "Other" },
+];
+// Sets "engineering" as the default selected category
+const [jobCategory, setJobCategory] = useState("");
+// Finds the full object of the currently selected category
+const selectedJobCategory = JOB_CATEGORIES.find((c) => c.id === jobCategory);
+// console.log("Selected category object:", selectedJobCategory);
+
+
+
+const JOB_TYPES = [
+  { id: "full-time", name: "Full-time" },
+  { id: "part-time", name: "Part-time" },
+  { id: "remote", name: "Remote" },
+  { id: "contract", name: "Contract" },
+  { id: "internship", name: "Internship" },
+];// Sets "full-time" as the default selected job type
+const [jobType, setJobType] = useState("");
+
+// Finds the full object of the currently selected job type
+const selectedJobType = JOB_TYPES.find((t) => t.id === jobType);
+// console.log("Selected job type object:", selectedJobType);
+
+
+
+
+
+    //  fetch real company from your API
     const company = { id: "abc123", name: "Niyog Inc.", industry: "Technology" };
 
     const {
         fields, errors, isRemote, setIsRemote,
-        handleChange, handleSubmit, isSubmitting,
+        handleChange, handleSubmit, isSubmitting, setField
     } = usePostJobForm({ company, recruiter: session?.user });
 
     return (
-        <div className="min-h-screen w-full px-6 py-8 bg-[#121212]">
+        <div className="min-h-screen w-full bg-[#121212]">
             <div className="mx-auto max-w-3xl">
 
                 {/* Page header */}
@@ -43,55 +86,82 @@ export default function PostJobPage() {
                     {/* ── Job Info ── */}
                     <Section label="Job Info">
                         <div className="grid grid-cols-2 gap-4">
-                            <Input
+                            <InputCustom
                                 label="Job Title"
                                 placeholder="e.g. Senior Frontend Developer"
                                 value={fields.title}
                                 onChange={handleChange("title")}
                                 error={errors.title}
                             />
-                            {/* --ctegory */}
-                            <Select className="w-full" placeholder="Select countries" selectionMode="multiple">
+                            {/* --category */}
+                            <Select
+                                className="w-full"
+                                placeholder="Select Category"
+                                value={jobCategory}
+                                onChange={(value) => { setJobCategory(value); setField("category", value); }}
+                            >
                                 <Label className="text-white/40">Job Category</Label>
                                 <Select.Trigger>
                                     <Select.Value />
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
-                                    <ListBox selectionMode="multiple">
-                                        {JOB_CATEGORIES.map((c) =>
-                                            <ListBox.Item key={c} id={c} textValue={c}>
-                                                {c}
+                                    <ListBox 
+                                    selectionMode="single"
+                                    >
+                                        {JOB_CATEGORIES.map((state) =>
+                                            <ListBox.Item key={state.id} id={state.id} textValue={state.name}>
+                                                {state.name}
                                                 <ListBox.ItemIndicator />
                                             </ListBox.Item>
                                         )}
                                     </ListBox>
+                                    
                                 </Select.Popover>
+                                {errors.category && <span className="text-[12px] text-red-400">{errors.category}</span>}
                             </Select>
 
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
 
-                            <Select className="w-full" placeholder="Select countries" selectionMode="multiple">
+                            <Select
+                                className="w-full"
+                                placeholder="Select Job Type"
+                                selectionMode="single"
+                                value={jobType}
+        onChange={(value) => {setJobType(value)
+                                setField("type", value);
+        }}
+                            >
                                 <Label className="text-white/40">Job Type</Label>
                                 <Select.Trigger>
                                     <Select.Value />
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
-                                    <ListBox selectionMode="multiple">
-                                        {JOB_TYPES.map((c) =>
-                                            <ListBox.Item key={c} id={c} textValue={c}>
-                                                {c}
+                                    <ListBox selectionMode="single">
+                                        {JOB_TYPES.map((state) =>
+                                            <ListBox.Item key={state.id} id={state.id} textValue={state.name}>
+                                                {state.name}
                                                 <ListBox.ItemIndicator />
                                             </ListBox.Item>
                                         )}
                                     </ListBox>
                                 </Select.Popover>
+                                {errors.type && <span className="text-[12px] text-red-400">{errors.type}</span>}
                             </Select>
 
-                            <DatePicker className="w-full" name="date">
+                            <DatePicker
+                                className="w-full"
+                                name="date"
+                                onChange={(dateValue) => {
+                                    if (!dateValue) return;
+                                    const iso = `${dateValue.year}-${String(dateValue.month).padStart(2, "0")}-${String(dateValue.day).padStart(2, "0")}`;
+                                    setField("deadline", iso);
+                                }}
+
+                            >
                                 <Label className="text-white/40">Application Deadline</Label>
                                 <DateField.Group fullWidth>
                                     <DateField.Input>{(segment) => <DateField.Segment segment={segment} />}</DateField.Input>
@@ -124,11 +194,12 @@ export default function PostJobPage() {
                                         </Calendar.YearPickerGrid>
                                     </Calendar>
                                 </DatePicker.Popover>
+                                {errors.deadline && <span className="text-[12px] text-red-400">{errors.deadline}</span>}
                             </DatePicker>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4">
-                            <Input
+                            <InputCustom
                                 label="Min Salary"
                                 type="number"
                                 placeholder="e.g. 50000"
@@ -136,7 +207,7 @@ export default function PostJobPage() {
                                 onChange={handleChange("salaryMin")}
                                 error={errors.salaryMin}
                             />
-                            <Input
+                            <InputCustom
                                 label="Max Salary"
                                 type="number"
                                 placeholder="e.g. 80000"
@@ -144,14 +215,22 @@ export default function PostJobPage() {
                                 onChange={handleChange("salaryMax")}
                                 error={errors.salaryMax}
                             />
-                            <Select className="w-full" placeholder="Select countries" selectionMode="multiple">
+                            <Select
+                                className="w-full"
+                                placeholder="Select Currency"
+                                selectionMode="single"
+                                 selectedKeys={fields.currency ? new Set([fields.currency]) : new Set()}
+                            >
+
                                 <Label className="text-white/40">Currency</Label>
                                 <Select.Trigger>
                                     <Select.Value />
                                     <Select.Indicator />
                                 </Select.Trigger>
                                 <Select.Popover>
-                                    <ListBox selectionMode="multiple">
+                                    <ListBox selectionMode="single"
+                                    selectedKeys={fields.currency ? new Set([fields.currency]) : new Set()}
+      onSelectionChange={(value) => setField("currency", value)}>
                                         {CURRENCIES.map((c) =>
                                             <ListBox.Item key={c} id={c} textValue={c}>
                                                 {c}
@@ -160,6 +239,7 @@ export default function PostJobPage() {
                                         )}
                                     </ListBox>
                                 </Select.Popover>
+                                {errors.currency && <span className="text-[12px] text-red-400">{errors.currency}</span>}
                             </Select>
 
                         </div>
@@ -178,13 +258,13 @@ export default function PostJobPage() {
                             </div>
                             {!isRemote && (
                                 <div className="grid grid-cols-2 gap-4">
-                                    <Input
+                                    <InputCustom
                                         placeholder="City"
                                         value={fields.city}
                                         onChange={handleChange("city")}
                                         error={errors.city}
                                     />
-                                    <Input
+                                    <InputCustom
                                         placeholder="Country"
                                         value={fields.country}
                                         onChange={handleChange("country")}
@@ -256,7 +336,7 @@ export default function PostJobPage() {
                         <button
                             type="submit"
                             disabled={!company || isSubmitting}
-                            className="rounded-xl bg-gradient-to-r from-[#6f62ff] to-[#7a5cff] px-6 py-2.5 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="rounded-xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-6 py-2.5 text-[14px] font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             {isSubmitting ? "Posting…" : "Post Job"}
                         </button>

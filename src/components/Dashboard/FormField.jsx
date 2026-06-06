@@ -1,4 +1,4 @@
-export function Input({ label, error, className = "", ...props }) {
+export function InputCustom({ label, error, className = "", ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
