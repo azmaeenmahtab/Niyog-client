@@ -21,10 +21,14 @@ export default function Navbar() {
   const isLoggedIn = Boolean(session?.user);
   const router = useRouter();
 
+  // console.log("Session data in Navbar:", session?.user.role);
+  const userRole = session?.user?.role;
+
   const navItems = [
     { label: "Browse Jobs", href: "#" },
     { label: "Company", href: "#" },
     { label: "Pricing", href: "#" },
+    
   ];
 
  const handlelogout  = async () => {
@@ -91,6 +95,11 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            <li>
+              <Link href={userRole === "applicant" ? "/dashboard/applicant" : userRole === "recruiter" ? "/dashboard/recruiter" : "#"} className="transition-colors hover:text-white">
+                Dashboard
+              </Link>
+            </li>
           </ul>
           {isLoggedIn ? (
             <div className="flex items-center gap-4">
