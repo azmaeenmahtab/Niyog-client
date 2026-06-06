@@ -18,28 +18,7 @@ export function Input({ label, error, className = "", ...props }) {
   );
 }
 
-export function Select({ label, error, children, className = "", ...props }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      {label && (
-        <label className="text-[12px] font-medium uppercase tracking-wider text-white/40">
-          {label}
-        </label>
-      )}
-      <select
-        {...props}
-        className={`h-10 w-full rounded-xl border ${
-          error ? "border-red-500/50 bg-red-500/5" : "border-white/8 bg-white/5"
-        } px-3.5 text-[14px] text-white outline-none transition
-        hover:border-white/15 focus:border-[#6e63ff]/60 focus:bg-white/8
-        [&>option]:bg-[#1a1a1a] [&>option]:text-white ${className}`}
-      >
-        {children}
-      </select>
-      {error && <span className="text-[12px] text-red-400">{error}</span>}
-    </div>
-  );
-}
+
 
 export function Textarea({ label, error, className = "", ...props }) {
   return (
