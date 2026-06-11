@@ -22,7 +22,7 @@ export function usePostJobForm({ onClose, company, recruiter }) {
   const [errors, setErrors] = useState({});
   const [isRemote, setIsRemote] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-    const router = useRouter();
+  const router = useRouter();
 
   const handleChange = (key) => (e) => {
     setFields((prev) => ({ ...prev, [key]: e.target.value }));
@@ -30,9 +30,9 @@ export function usePostJobForm({ onClose, company, recruiter }) {
   };
 
   const setField = (key, value) => {
-  setFields((prev) => ({ ...prev, [key]: value }));
-  setErrors((prev) => ({ ...prev, [key]: "" }));
-};
+    setFields((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: "" }));
+  };
 
   const validate = () => {
     const errs = {};
@@ -70,7 +70,7 @@ export function usePostJobForm({ onClose, company, recruiter }) {
     e.preventDefault();
     const errs = validate();
     console.log("errors:", errs);      // add this
-  console.log("fields:", fields);
+    console.log("fields:", fields);
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
@@ -85,13 +85,21 @@ export function usePostJobForm({ onClose, company, recruiter }) {
         recruiterId: recruiter?.id,
         postedAt: new Date().toISOString(),
       };
-      // TODO: replace with your real API call
+
+
       console.log("Submitting job:", payload);
-      await new Promise((r) => setTimeout(r, 800)); // simulated delay
+      const result = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
+        method: "POST",
+        headers: {
+          'Content-Type': "application/json",
+        },
+        body: JSON.stringify(payload)
+      })
+      console.log(result);
       setFields(INITIAL);
       setErrors({});
       // in handleSubmit, replace onClose() with:
-router.push("/dashboard/recruiter/jobs");
+      router.push("/dashboard/recruiter/jobs");
     } finally {
       setIsSubmitting(false);
     }

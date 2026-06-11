@@ -9,6 +9,7 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { signIn, signUp } from "@/lib/auth-client";
 import { RoleRadioGroup } from "@/components/RadioGroupRole";
+// import { createAuthClient } from "better-auth/react";
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -21,7 +22,7 @@ const initialValues = {
   confirmPassword: "",
 };
 
-const initialRole = "applicant";
+const initialRole = "";
 
 const initialTouched = {
   name: false,
@@ -82,6 +83,15 @@ export default function SignupPage() {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [rolechosen, setRoleChosen] = useState(false);
+  const [rolewarning, setRoleWarning] = useState("");
+  // const authClient = createAuthClient();
+
+  //   const signIn = async () => {
+  //   const data = await authClient.signIn.social({
+  //     provider: "google",
+  //   });
+  // };
 
   const errors = useMemo(() => validate(values), [values]);
   const visibleErrors = Object.fromEntries(
@@ -143,6 +153,10 @@ export default function SignupPage() {
   };
 
   const handleGoogleSignup = async () => {
+    if (!rolechosen) {
+      setRoleWarning("Select a role first.");
+      return;
+    }
     setIsGoogleLoading(true);
     setFormError("");
     setSuccessMessage("");
@@ -156,13 +170,16 @@ export default function SignupPage() {
       if (result?.error) {
         setFormError(
           result.error.message ||
-            "Google signup is not configured yet. Please add the Google OAuth provider."
+          "Google signup is not configured yet. Please add the Google OAuth provider."
         );
       }
+
+      // role api will be added here for google signups 
+
     } catch (error) {
       setFormError(
         error?.message ||
-          "Google signup is not configured yet. Please add the Google OAuth provider."
+        "Google signup is not configured yet. Please add the Google OAuth provider."
       );
     } finally {
       setIsGoogleLoading(false);
@@ -206,6 +223,11 @@ export default function SignupPage() {
             <FontAwesomeIcon icon={faGoogle} className="h-4 w-4" />
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
           </button>
+          {rolewarning && (
+            <p className="mt-2 text-sm font-medium text-[#ff7b8d]">
+              {rolewarning}
+            </p>
+          )}
 
           <div className="my-4 flex items-center gap-4">
             <span className="h-px flex-1 bg-white/10" />
@@ -257,7 +279,10 @@ export default function SignupPage() {
             </div>
 
             <div className="text-white">
-              <RoleRadioGroup value={role} onChange={setRole} />
+              <RoleRadioGroup value={role} onChange={(nextRole) => {
+                setRole(nextRole);
+                setRoleChosen(true);
+              }} />
             </div>
 
             <div>

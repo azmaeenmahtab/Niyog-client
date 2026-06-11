@@ -2,21 +2,11 @@
 
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { InputCustom, Textarea, Toggle } from "@/components/Dashboard/FormField";
+import { InputCustom, Textarea, Toggle } from "@/components/RecruiterDashboard/FormField";
 import { usePostJobForm } from "./usePostJobForm";
 import { Label, ListBox, Select } from "@heroui/react";
 import { Calendar, DateField, DatePicker } from "@heroui/react";
 import { useState } from "react";
-
-// const JOB_CATEGORIES = [
-//     "Engineering", "Design", "Marketing", "Sales", "Finance",
-//     "HR", "Operations", "Product", "Data", "Legal", "Other",
-// ];
-
-
-
-const CURRENCIES = ["USD", "BDT", "EUR", "GBP", "CAD", "AUD"];
-
 
 
 export default function PostJobPage() {
@@ -61,18 +51,18 @@ export default function PostJobPage() {
 
 
     const CURRENCIES = [
-  { id: "usd", name: "USD" },
-  { id: "bdt", name: "BDT" },
-  { id: "eur", name: "EUR" },
-  { id: "gbp", name: "GBP" },
-  { id: "cad", name: "CAD" },
-  { id: "aud", name: "AUD" },
-];
-// Sets "usd" as the default selected currency
-const [currency, setCurrency] = useState("");
+        { id: "usd", name: "USD" },
+        { id: "bdt", name: "BDT" },
+        { id: "eur", name: "EUR" },
+        { id: "gbp", name: "GBP" },
+        { id: "cad", name: "CAD" },
+        { id: "aud", name: "AUD" },
+    ];
+    // Sets "usd" as the default selected currency
+    const [currency, setCurrency] = useState("");
 
-// Finds the full object of the currently selected currency
-const selectedCurrency = CURRENCIES.find((c) => c.id === currency);
+    // Finds the full object of the currently selected currency
+    const selectedCurrency = CURRENCIES.find((c) => c.id === currency);
 
 
 
@@ -238,7 +228,7 @@ const selectedCurrency = CURRENCIES.find((c) => c.id === currency);
                                 className="w-full"
                                 placeholder="Select Currency"
                                 value={currency}
-        onChange={(value) => {  setCurrency(value); setField("currency", value); }}
+                                onChange={(value) => { setCurrency(value); setField("currency", value); }}
                             >
 
                                 <Label className="text-white/40">Currency</Label>
