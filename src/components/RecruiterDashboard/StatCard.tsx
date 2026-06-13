@@ -1,6 +1,13 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
-export default function StatCard({ icon, label, value }) {
+interface StatCardProps {
+  icon: IconDefinition;
+  label: string;
+  value: number | string;
+}
+
+export default function StatCard({ icon, label, value }: StatCardProps) {
   return (
     <div className="flex flex-1 flex-col gap-6 rounded-2xl border border-white/8 bg-[#1a1a1a] p-5 min-w-0">
       <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/6 text-white/70">

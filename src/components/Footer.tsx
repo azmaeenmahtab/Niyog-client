@@ -22,7 +22,14 @@ const footerColumns = [
 	},
 ];
 
-function SocialButton({ href, label, active, children }) {
+interface SocialButtonProps {
+	href: string;
+	label: string;
+	active?: boolean;
+	children: React.ReactNode;
+}
+
+function SocialButton({ href, label, active, children }: SocialButtonProps) {
 	return (
 		<Link
 			href={href}

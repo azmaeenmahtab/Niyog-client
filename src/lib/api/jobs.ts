@@ -1,23 +1,22 @@
-const getAllJobs = async () => {
+export const getAllJobs = async () => {
     try {
         const result = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get-all-jobs`);
         const data = await result.json();
         return data;
     } catch (error) {
         console.log(error);
-        return error;
+        throw error;
     }
 }
 
-const getAllJobsByCompanyId = async (companyId, status) => {
+export const getAllJobsByCompanyId = async (companyId: string, status?: string) => {
     try {
-        const result = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get-jobs-by-company-id?companyId=${companyId}&status=${status}`);
+        const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-jobs-by-company-id?companyId=${companyId}${status ? `&status=${status}` : ''}`;
+        const result = await fetch(url);
         const data = await result.json();
         return data;
     } catch (error) {
         console.log(error);
-        return error;
+        throw error;
     }
 }
-
-export { getAllJobs, getAllJobsByCompanyId }

@@ -1,46 +1,36 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Oswald } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
-import { signIn, signUp } from "@/lib/auth-client";
-import { RoleRadioGroup } from "@/components/RadioGroupRole";
-// import { createAuthClient } from "better-auth/react";
+import { signIn } from "@/lib/auth-client";
 
 const oswald = Oswald({
   subsets: ["latin"],
 });
 
 const initialValues = {
-  name: "",
   email: "",
   password: "",
-  confirmPassword: "",
 };
-
-const initialRole = "";
 
 const initialTouched = {
-  name: false,
   email: false,
   password: false,
-  confirmPassword: false,
 };
 
-function validate(values) {
-  const errors = {};
-  const name = values.name.trim();
-  const email = values.email.trim();
+type FormValues = typeof initialValues;
+type TouchedFields = typeof initialTouched;
+type FormErrors = Partial<Record<keyof FormValues, string>>;
 
-  if (!name) {
-    errors.name = "Name is required.";
-  } else if (name.length < 2) {
-    errors.name = "Name must be at least 2 characters.";
-  }
+function validate(values: FormValues): FormErrors {
+  const errors: FormErrors = {};
+  const email = values.email.trim();
 
   if (!email) {
     errors.email = "Email is required.";
@@ -52,20 +42,12 @@ function validate(values) {
     errors.password = "Password is required.";
   } else if (values.password.length < 8) {
     errors.password = "Password must be at least 8 characters.";
-  } else if (!/[A-Z]/.test(values.password) || !/[0-9]/.test(values.password)) {
-    errors.password = "Use at least one uppercase letter and one number.";
-  }
-
-  if (!values.confirmPassword) {
-    errors.confirmPassword = "Confirm your password.";
-  } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = "Passwords do not match.";
   }
 
   return errors;
 }
 
-function FieldError({ id, message }) {
+function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
 
   return (
@@ -75,91 +57,69 @@ function FieldError({ id, message }) {
   );
 }
 
-export default function SignupPage() {
+export default function LoginIndex() {
+  const router = useRouter();
   const [values, setValues] = useState(initialValues);
-  const [role, setRole] = useState(initialRole);
   const [touched, setTouched] = useState(initialTouched);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [formError, setFormError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-  const [rolechosen, setRoleChosen] = useState(false);
-  const [rolewarning, setRoleWarning] = useState("");
-  // const authClient = createAuthClient();
-
-  //   const signIn = async () => {
-  //   const data = await authClient.signIn.social({
-  //     provider: "google",
-  //   });
-  // };
 
   const errors = useMemo(() => validate(values), [values]);
   const visibleErrors = Object.fromEntries(
-    Object.entries(errors).filter(([field]) => touched[field])
-  );
+    Object.entries(errors).filter(([field]) => touched[field as keyof TouchedFields])
+  ) as FormErrors;
 
-  const handleChange = (event) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setValues((current) => ({ ...current, [name]: value }));
     setFormError("");
-    setSuccessMessage("");
   };
 
-  const handleBlur = (event) => {
+  const handleBlur = (event: ChangeEvent<HTMLInputElement>) => {
     const { name } = event.target;
     setTouched((current) => ({ ...current, [name]: true }));
   };
 
-  const handleEmailSignup = async (event) => {
+  const handleEmailLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nextErrors = validate(values);
     setTouched({
-      name: true,
       email: true,
       password: true,
-      confirmPassword: true,
     });
     setFormError("");
-    setSuccessMessage("");
 
     if (Object.keys(nextErrors).length > 0) return;
 
     setIsSubmitting(true);
 
     try {
-      const result = await signUp.email({
-        name: values.name.trim(),
+      const result = await signIn.email({
         email: values.email.trim(),
         password: values.password,
-        role,
         callbackURL: "/",
       });
 
       if (result?.error) {
-        setFormError(result.error.message || "Signup failed. Please try again.");
+        setFormError(result.error.message || "Sign in failed. Please try again.");
         return;
       }
 
-      setSuccessMessage("Account created successfully.");
-      setValues(initialValues);
-      setRole(initialRole);
-      setTouched(initialTouched);
+      router.replace("/");
     } catch (error) {
-      setFormError(error?.message || "Signup failed. Please try again.");
+      console.error("Email sign in error:", error);
+      const message = error instanceof Error ? error.message : "Sign in failed. Please try again.";
+      setFormError(message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleGoogleSignup = async () => {
-    if (!rolechosen) {
-      setRoleWarning("Select a role first.");
-      return;
-    }
+  const handleGoogleLogin = async () => {
     setIsGoogleLoading(true);
     setFormError("");
-    setSuccessMessage("");
 
     try {
       const result = await signIn.social({
@@ -170,17 +130,14 @@ export default function SignupPage() {
       if (result?.error) {
         setFormError(
           result.error.message ||
-          "Google signup is not configured yet. Please add the Google OAuth provider."
+            "Google sign in is not configured yet. Please add the Google OAuth provider."
         );
       }
-
-      // role api will be added here for google signups 
-
     } catch (error) {
-      setFormError(
-        error?.message ||
-        "Google signup is not configured yet. Please add the Google OAuth provider."
-      );
+      const message = error instanceof Error
+        ? error.message
+        : "Google sign in is not configured yet. Please add the Google OAuth provider.";
+      setFormError(message);
     } finally {
       setIsGoogleLoading(false);
     }
@@ -201,14 +158,14 @@ export default function SignupPage() {
 
           <div className="mt-12">
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c72ff]">
-              Create account
+              Welcome back
             </p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">
-              Start building your career profile.
+              Sign in to continue your career journey.
             </h1>
             <p className="mt-5 max-w-md text-base leading-7 text-white/55">
-              Join Niyog with your email or continue with Google when OAuth is
-              connected.
+              Use your email and password to access your profile, or continue
+              with Google once OAuth is configured.
             </p>
           </div>
         </div>
@@ -216,20 +173,15 @@ export default function SignupPage() {
         <div className="w-full max-w-md rounded-lg border border-white/10 bg-[#111111] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.36)] sm:p-8">
           <button
             type="button"
-            onClick={handleGoogleSignup}
+            onClick={handleGoogleLogin}
             disabled={isGoogleLoading || isSubmitting}
             className="flex h-12 w-full items-center justify-center gap-3 rounded-md border border-white/12 bg-white px-4 text-sm font-semibold text-[#181818] transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-70"
           >
             <FontAwesomeIcon icon={faGoogle} className="h-4 w-4" />
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
           </button>
-          {rolewarning && (
-            <p className="mt-2 text-sm font-medium text-[#ff7b8d]">
-              {rolewarning}
-            </p>
-          )}
 
-          <div className="my-4 flex items-center gap-4">
+          <div className="my-6 flex items-center gap-4">
             <span className="h-px flex-1 bg-white/10" />
             <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/35">
               or
@@ -237,27 +189,7 @@ export default function SignupPage() {
             <span className="h-px flex-1 bg-white/10" />
           </div>
 
-          <form className="space-y-4" noValidate onSubmit={handleEmailSignup}>
-            <div>
-              <label htmlFor="name" className="text-sm font-medium text-white/78">
-                Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value={values.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                aria-invalid={Boolean(visibleErrors.name)}
-                aria-describedby={visibleErrors.name ? "name-error" : undefined}
-                autoComplete="name"
-                className="mt-2 h-12 w-full rounded-md border border-white/12 bg-[#0a0a0a] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#7c72ff] focus:ring-3 focus:ring-[#7c72ff]/18"
-                placeholder="Your full name"
-              />
-              <FieldError id="name-error" message={visibleErrors.name} />
-            </div>
-
+          <form className="space-y-5" noValidate onSubmit={handleEmailLogin}>
             <div>
               <label htmlFor="email" className="text-sm font-medium text-white/78">
                 Email
@@ -278,13 +210,6 @@ export default function SignupPage() {
               <FieldError id="email-error" message={visibleErrors.email} />
             </div>
 
-            <div className="text-white">
-              <RoleRadioGroup value={role} onChange={(nextRole) => {
-                setRole(nextRole);
-                setRoleChosen(true);
-              }} />
-            </div>
-
             <div>
               <label htmlFor="password" className="text-sm font-medium text-white/78">
                 Password
@@ -297,44 +222,12 @@ export default function SignupPage() {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 aria-invalid={Boolean(visibleErrors.password)}
-                aria-describedby={
-                  visibleErrors.password ? "password-error" : undefined
-                }
-                autoComplete="new-password"
+                aria-describedby={visibleErrors.password ? "password-error" : undefined}
+                autoComplete="current-password"
                 className="mt-2 h-12 w-full rounded-md border border-white/12 bg-[#0a0a0a] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#7c72ff] focus:ring-3 focus:ring-[#7c72ff]/18"
-                placeholder="Minimum 8 characters"
+                placeholder="Your password"
               />
               <FieldError id="password-error" message={visibleErrors.password} />
-            </div>
-
-            <div>
-              <label
-                htmlFor="confirmPassword"
-                className="text-sm font-medium text-white/78"
-              >
-                Confirm password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={values.confirmPassword}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                aria-invalid={Boolean(visibleErrors.confirmPassword)}
-                aria-describedby={
-                  visibleErrors.confirmPassword
-                    ? "confirm-password-error"
-                    : undefined
-                }
-                autoComplete="new-password"
-                className="mt-2 h-12 w-full rounded-md border border-white/12 bg-[#0a0a0a] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#7c72ff] focus:ring-3 focus:ring-[#7c72ff]/18"
-                placeholder="Repeat your password"
-              />
-              <FieldError
-                id="confirm-password-error"
-                message={visibleErrors.confirmPassword}
-              />
             </div>
 
             {formError ? (
@@ -343,25 +236,19 @@ export default function SignupPage() {
               </p>
             ) : null}
 
-            {successMessage ? (
-              <p className="rounded-md border border-[#66e0a3]/25 bg-[#66e0a3]/10 px-4 py-3 text-sm font-medium text-[#8ff0bd]">
-                {successMessage}
-              </p>
-            ) : null}
-
             <button
               type="submit"
               disabled={isSubmitting || isGoogleLoading}
               className="h-12 w-full rounded-md bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(111,98,255,0.32)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
             >
-              {isSubmitting ? "Creating account..." : "Create account"}
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-white/45">
-            Already have an account?{" "}
-            <Link href="/auth/login" className="font-semibold text-[#8c84ff]">
-              Sign in
+            Don&apos;t have an account?{" "}
+            <Link href="/auth/signup" className="font-semibold text-[#8c84ff]">
+              Sign up
             </Link>
           </p>
         </div>

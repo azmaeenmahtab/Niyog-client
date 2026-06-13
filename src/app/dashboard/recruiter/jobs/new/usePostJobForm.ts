@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-
 
 const INITIAL = {
   title: "",
@@ -17,25 +16,45 @@ const INITIAL = {
   benefits: "",
 };
 
-export function usePostJobForm({ onClose, company, recruiter }) {
+export type JobFormFields = typeof INITIAL;
+type FieldKey = keyof JobFormFields;
+type FormErrors = Partial<Record<FieldKey, string>>;
+
+interface Company {
+  id: string;
+  name: string;
+  industry?: string;
+}
+
+interface Recruiter {
+  id?: string;
+}
+
+interface UsePostJobFormOptions {
+  onClose?: () => void;
+  company?: Company;
+  recruiter?: Recruiter;
+}
+
+export function usePostJobForm({ company, recruiter }: UsePostJobFormOptions) {
   const [fields, setFields] = useState(INITIAL);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [isRemote, setIsRemote] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleChange = (key) => (e) => {
+  const handleChange = (key: FieldKey) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFields((prev) => ({ ...prev, [key]: e.target.value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
-  const setField = (key, value) => {
+  const setField = (key: FieldKey, value: string) => {
     setFields((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
   const validate = () => {
-    const errs = {};
+    const errs: FormErrors = {};
     if (!fields.title.trim()) errs.title = "Job title is required.";
     if (!fields.category) errs.category = "Please select a category.";
     if (!fields.type) errs.type = "Please select a job type.";
@@ -46,7 +65,7 @@ export function usePostJobForm({ onClose, company, recruiter }) {
     }
     if (!fields.salaryMin) {
       errs.salaryMin = "Required.";
-    } else if (isNaN(fields.salaryMin) || Number(fields.salaryMin) < 0) {
+    } else if (isNaN(Number(fields.salaryMin)) || Number(fields.salaryMin) < 0) {
       errs.salaryMin = "Enter a valid amount.";
     }
     if (!fields.salaryMax) {
@@ -66,11 +85,9 @@ export function usePostJobForm({ onClose, company, recruiter }) {
     return errs;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const errs = validate();
-    console.log("errors:", errs);      // add this
-    console.log("fields:", fields);
     if (Object.keys(errs).length) {
       setErrors(errs);
       return;
@@ -86,19 +103,15 @@ export function usePostJobForm({ onClose, company, recruiter }) {
         postedAt: new Date().toISOString(),
       };
 
-
-      console.log("Submitting job:", payload);
-      const result = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
+      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
         method: "POST",
         headers: {
-          'Content-Type': "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
-      })
-      console.log(result);
+        body: JSON.stringify(payload),
+      });
       setFields(INITIAL);
       setErrors({});
-      // in handleSubmit, replace onClose() with:
       router.push("/dashboard/recruiter/jobs");
     } finally {
       setIsSubmitting(false);
@@ -113,6 +126,6 @@ export function usePostJobForm({ onClose, company, recruiter }) {
     handleChange,
     handleSubmit,
     isSubmitting,
-    setField
+    setField,
   };
 }

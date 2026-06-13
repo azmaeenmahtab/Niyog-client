@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { useSession } from "@/lib/auth-client";
-import {authClient} from "@/lib/auth-client";
+import type { SessionUser } from "@/lib/auth-types";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
 const oswald = Oswald({
@@ -21,28 +22,26 @@ export default function Navbar() {
   const isLoggedIn = Boolean(session?.user);
   const router = useRouter();
 
-  // console.log("Session data in Navbar:", session?.user.role);
-  const userRole = session?.user?.role;
+  const userRole = (session?.user as SessionUser | undefined)?.role;
 
   const navItems = [
     { label: "Browse Jobs", href: "#" },
     { label: "Company", href: "#" },
     { label: "Pricing", href: "#" },
-    
   ];
 
- const handlelogout  = async () => {
-  await authClient.signOut({
-    fetchOptions: {
-      onSuccess: () => {
-        router.push("/");
-      }
-    }
-  });
- }
+  const handlelogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+      },
+    });
+  };
 
   return (
-    <nav className="sticky top-0 z-40 w-full  px-4 pt-6 bg-transparent">
+    <nav className="sticky top-0 z-40 w-full px-4 pt-6 bg-transparent">
       <header className="mx-auto flex w-full max-w-337.5 items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
         <div className="flex items-center gap-3">
           <button
@@ -107,16 +106,13 @@ export default function Navbar() {
                 Logout
               </button>
               <div
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 cursor-pointer bg-white/8 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
-              title={session?.user?.name || session?.user?.email || "Account"}
-              aria-label="Logged in account"
-            >
-              
-              <FontAwesomeIcon icon={faCircleUser} className="h-auto w-5" />
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 cursor-pointer bg-white/8 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
+                title={session?.user?.name || session?.user?.email || "Account"}
+                aria-label="Logged in account"
+              >
+                <FontAwesomeIcon icon={faCircleUser} className="h-auto w-5" />
+              </div>
             </div>
-            
-            </div>
-            
           ) : (
             <div className="flex items-center gap-4">
               <Link
@@ -127,7 +123,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/auth/signup"
-                className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white  transition hover:brightness-110"
+                className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-110"
               >
                 Get Started
               </Link>

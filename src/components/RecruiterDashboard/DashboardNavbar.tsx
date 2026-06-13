@@ -8,6 +8,7 @@ import { faCircleUser, faBell } from "@fortawesome/free-regular-svg-icons";
 import { faMagnifyingGlass, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { useSession } from "@/lib/auth-client";
+import type { SessionUser } from "@/lib/auth-types";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
@@ -16,8 +17,8 @@ const oswald = Oswald({ subsets: ["latin"] });
 export default function DashboardNavbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [hasNotifications, setHasNotifications] = useState(true); // toggle based on real data
-  const dropdownRef = useRef(null);
+  const [hasNotifications, setHasNotifications] = useState(true);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: session } = useSession();
   const isLoggedIn = Boolean(session?.user);
@@ -25,8 +26,7 @@ export default function DashboardNavbar() {
 
   const userName = session?.user?.name || "Guest";
   const userEmail = session?.user?.email || "";
-  // Derive a short role label — adjust to your actual session shape
-  const userRole = (session?.user )?.role || "Member";
+  const userRole = (session?.user as SessionUser | undefined)?.role || "Member";
 
   const handleLogout = async () => {
     await authClient.signOut({
@@ -38,10 +38,9 @@ export default function DashboardNavbar() {
     });
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
-    function handleClickOutside(e ) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target )) {
+    function handleClickOutside(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsDropdownOpen(false);
       }
     }
@@ -52,8 +51,6 @@ export default function DashboardNavbar() {
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-white/8 bg-[#141414] px-7 py-3">
       <div className="flex h-15 items-center gap-4">
-
-        {/* Logo */}
         <div className="flex shrink-0 items-center gap-2 w-50">
           <Image src={whitelogo} alt="Niyog" className="h-7 w-auto" priority />
           <span
@@ -63,10 +60,8 @@ export default function DashboardNavbar() {
           </span>
         </div>
 
-        {/* Divider */}
         <div className="mx-3 h-6 w-px bg-white/10 shrink-0" />
 
-        {/* Search bar — grows to fill center */}
         <div className="relative flex flex-1 items-center">
           <FontAwesomeIcon
             icon={faMagnifyingGlass}
@@ -81,10 +76,7 @@ export default function DashboardNavbar() {
           />
         </div>
 
-        {/* Right side */}
         <div className="ml-3 flex shrink-0 items-center gap-3">
-
-          {/* Notification bell */}
           <button
             className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/8 bg-white/5 text-white/60 transition hover:border-white/15 hover:bg-white/10 hover:text-white"
             aria-label="Notifications"
@@ -96,18 +88,15 @@ export default function DashboardNavbar() {
             )}
           </button>
 
-          {/* User section */}
           {isLoggedIn ? (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
                 className="flex items-center gap-2.5 rounded-lg border border-white/8 bg-white/5 py-1.5 pl-1.5 pr-3 transition hover:border-white/15 hover:bg-white/10"
               >
-                {/* Avatar */}
                 <span className="flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/8 text-white">
                   <FontAwesomeIcon icon={faCircleUser} className="h-4 w-4" />
                 </span>
-                {/* Name + role */}
                 <div className="flex flex-col items-start leading-none">
                   <span className="text-[13px] font-medium text-white/90">{userName}</span>
                   <span className="mt-0.5 text-[11px] text-white/40">{userRole}</span>
@@ -118,7 +107,6 @@ export default function DashboardNavbar() {
                 />
               </button>
 
-              {/* Dropdown */}
               {isDropdownOpen && (
                 <div className="absolute right-0 top-[calc(100%+8px)] w-52 rounded-xl border border-white/10 bg-[#1e1e1e] py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
                   <div className="border-b border-white/8 px-4 py-2.5">
@@ -149,7 +137,6 @@ export default function DashboardNavbar() {
               )}
             </div>
           ) : (
-            // Fallback if somehow accessed unauthenticated
             <button
               onClick={() => router.push("/auth/login")}
               className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-[13px] text-[#6e63ff] transition hover:bg-white/10 hover:text-white"

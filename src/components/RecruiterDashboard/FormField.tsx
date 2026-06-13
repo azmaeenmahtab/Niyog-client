@@ -1,4 +1,11 @@
-export function InputCustom({ label, error, className = "", ...props }) {
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
+
+interface InputCustomProps extends InputHTMLAttributes<HTMLInputElement> {
+  label?: string;
+  error?: string;
+}
+
+export function InputCustom({ label, error, className = "", ...props }: InputCustomProps) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
@@ -18,9 +25,12 @@ export function InputCustom({ label, error, className = "", ...props }) {
   );
 }
 
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string;
+  error?: string;
+}
 
-
-export function Textarea({ label, error, className = "", ...props }) {
+export function Textarea({ label, error, className = "", ...props }: TextareaProps) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
@@ -40,7 +50,13 @@ export function Textarea({ label, error, className = "", ...props }) {
   );
 }
 
-export function Toggle({ label, checked, onChange }) {
+interface ToggleProps {
+  label?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+export function Toggle({ label, checked, onChange }: ToggleProps) {
   return (
     <label className="flex cursor-pointer items-center gap-2.5">
       <div

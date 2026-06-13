@@ -1,6 +1,11 @@
 import { Label, Radio, RadioGroup } from "@heroui/react";
 
-export function RoleRadioGroup({ value, onChange }) {
+interface RoleRadioGroupProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function RoleRadioGroup({ value, onChange }: RoleRadioGroupProps) {
   return (
     <div className="flex flex-col gap-4">
       <Label className="text-white/78">Account Type</Label>
@@ -16,7 +21,6 @@ export function RoleRadioGroup({ value, onChange }) {
           </Radio.Control>
           <Radio.Content>
             <Label className="text-white/78">Applicant</Label>
-            {/* <Description>For side projects</Description> */}
           </Radio.Content>
         </Radio>
         <Radio value="recruiter">
@@ -25,10 +29,8 @@ export function RoleRadioGroup({ value, onChange }) {
           </Radio.Control>
           <Radio.Content>
             <Label className="text-white/78">Recruiter</Label>
-            {/* <Description>Advanced reporting</Description> */}
           </Radio.Content>
         </Radio>
-         
       </RadioGroup>
     </div>
   );
