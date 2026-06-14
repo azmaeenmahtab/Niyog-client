@@ -3,10 +3,15 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "@iconify/react";
-import { Button, Label, ListBox, Select } from "@heroui/react";
+import { Button, Label, ListBox, Select, toast } from "@heroui/react";
 import { InputCustom, Textarea } from "@/components/RecruiterDashboard/FormField";
 import { useRegisterCompanyModal } from "@/lib/contexts/registerCompanyModalContext";
+import {
+  RegisterCompanyAction,
+  type RegisterCompanyPayload,
+} from "@/lib/actions/company";
 
+ 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const IMGBB_API_KEY = process.env.NEXT_PUBLIC_IMGBB_API_KEY!;
@@ -44,7 +49,9 @@ const EMPTY_FORM = {
 };
 
 type FormFields = typeof EMPTY_FORM;
-type FormErrors = Partial<Record<keyof FormFields | "logo", string>>;
+type FormErrors = Partial<Record<keyof FormFields | "logoUrl", string>>;
+
+ 
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -85,15 +92,15 @@ async function uploadToImgbb(file: File): Promise<string> {
 export function RegisterCompanyModal() {
   const { isOpen, closeModal } = useRegisterCompanyModal();
 
-  const [mounted, setMounted]       = useState(false);
-  const [fields, setFields]         = useState<FormFields>(EMPTY_FORM);
-  const [errors, setErrors]         = useState<FormErrors>({});
-  const [logoFile, setLogoFile]     = useState<File | null>(null);
+  const [mounted, setMounted]         = useState(false);
+  const [fields, setFields]           = useState<FormFields>(EMPTY_FORM);
+  const [errors, setErrors]           = useState<FormErrors>({});
+  const [logoFile, setLogoFile]       = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+ 
   // Needed so the portal only runs on the client (avoids Next.js SSR mismatch)
   useEffect(() => { setMounted(true); }, []);
 
@@ -120,7 +127,7 @@ export function RegisterCompanyModal() {
     const file = e.target.files?.[0];
     if (!file) return;
     setLogoFile(file);
-    setErrors((prev) => ({ ...prev, logo: undefined }));
+    setErrors((prev) => ({ ...prev, logoUrl: undefined }));
     // Show a local preview immediately; the real upload happens on submit
     const reader = new FileReader();
     reader.onload = () => setLogoPreview(reader.result as string);
@@ -157,21 +164,36 @@ export function RegisterCompanyModal() {
         logoUrl = await uploadToImgbb(logoFile);
       }
 
-      const payload = { ...fields, logoUrl };
-      console.log("Company payload ready:", payload);
-      // TODO: POST `payload` to your backend API here
+      const payload: RegisterCompanyPayload = { ...fields, logoUrl };
+      const result = await RegisterCompanyAction(payload);
 
+      if (!result.ok) {
+        setErrors((prev) => ({
+          ...prev,
+          ...(result.fieldErrors ?? {}),
+        }));
+        // Fall back to a top-level message under the logo field if no field errors came back.
+        if (!result.fieldErrors) {
+          setErrors((prev) => ({ ...prev, logoUrl: result.message }));
+        }
+        return;
+      }
+
+      resetForm();
+      toast.success("Company registered.")
+      // Show the toast first, then close the modal on the next tick so the
+      // toast provider has a chance to render before the modal unmounts.
+       setTimeout(closeModal, 0);
     } catch (err) {
       console.error(err);
-      setErrors((prev) => ({ ...prev, logo: "Logo upload failed. Try again." }));
-      return;
+      setErrors((prev) => ({ ...prev, logoUrl: "Logo upload failed. Try again." }));
     } finally {
       setIsSubmitting(false);
     }
-
-    resetForm();
-    closeModal();
   }
+
+  // Toast provider is mounted with the modal; firing it is done via toastRef.
+
 
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -316,7 +338,7 @@ export function RegisterCompanyModal() {
                   <span className="text-[11px] text-white/40">PNG, JPG or SVG up to 2MB</span>
                 </div>
               </div>
-              {errors.logo && <span className="text-[12px] text-red-400">{errors.logo}</span>}
+              {errors.logoUrl && <span className="text-[12px] text-red-400">{errors.logoUrl}</span>}
             </div>
 
             <Textarea
@@ -342,7 +364,7 @@ export function RegisterCompanyModal() {
               type="submit"
               variant="primary"
               isDisabled={isSubmitting}
-              className="rounded-xl bg-gradient-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-2 text-[13px] font-semibold text-white"
+              className="rounded-xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-2 text-[13px] font-semibold text-white"
             >
               {isSubmitting ? "Registering…" : "Register Company"}
             </Button>
@@ -350,7 +372,9 @@ export function RegisterCompanyModal() {
 
         </form>
       </div>
-    </div>,
+
+      {/* Success toast — provider lives in DOM, button is hidden via trigger="" */}
+     </div>,
     document.body,
   );
 }

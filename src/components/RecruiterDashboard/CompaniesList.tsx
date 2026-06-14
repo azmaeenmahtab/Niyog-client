@@ -1,12 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button, Chip } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useRegisterCompanyModal } from "@/lib/contexts/registerCompanyModalContext";
+import {
+  getAllCompaniesAction,
+  type Company,
+} from "@/lib/actions/company";
 
 type CompanyStatus = "pending" | "approved" | "rejected";
 
-interface Company {
+interface CompanyCard {
   id: string;
   name: string;
   category: string;
@@ -25,50 +30,67 @@ const statusColorMap: Record<CompanyStatus, "warning" | "success" | "danger"> = 
   rejected: "danger",
 };
 
-const companies: Company[] = [
-  {
-    id: "vercel",
-    name: "Vercel",
-    category: "Technology",
-    status: "pending",
-    description:
-      "Vercel is the platform for frontend developers, providing speed and reliability. Experience the best workflow for React, Next.js, and more.",
-    location: "San Francisco",
-    employeeRange: "201-500 range",
-    website: "https://vercel.com",
-    logoBg: "bg-black",
-    logoInitial: "V",
-  },
-  {
-    id: "figma",
-    name: "Figma",
-    category: "Technology",
-    status: "approved",
-    description:
-      "Figma is the collaborative interface design tool — design, prototype, and gather feedback all in one place. Empowering teams to build better products.",
-    location: "San Francisco",
-    employeeRange: "501-1000 range",
-    website: "https://figma.com",
-    logoBg: "bg-[#F24E1E]",
-    logoInitial: "F",
-  },
-  {
-    id: "enosis",
-    name: "Enosis Solutions",
-    category: "Technology",
-    status: "pending",
-    description:
-      "ENOSIS - Your trusted Software Development Partner: A top tier software development team assisting owners and decision makers to implement.",
-    location: "Dhaka, Bangladesh",
-    employeeRange: "51-200 range",
-    website: "https://enosisbd.com",
-    logoBg: "bg-white",
-    logoInitial: "Enosis",
-  },
+const PALETTE = [
+  "bg-black",
+  "bg-[#F24E1E]",
+  "bg-white",
+  "bg-[#5f55ff]",
+  "bg-[#d39be8]",
+  "bg-[#0f172a]",
 ];
+
+function pickBg(id: string): string {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash + id.charCodeAt(i)) % PALETTE.length;
+  return PALETTE[hash];
+}
+
+function toCard(company: Company): CompanyCard {
+  const id = company._id || company.name;
+  return {
+    id,
+    name: company.name || "Unnamed company",
+    category: company.industry || "Other",
+    status: "pending",
+    description: company.description || "No description provided yet.",
+    location: company.location || "Location not set",
+    employeeRange: company.employeeRange || "—",
+    website: company.website || "#",
+    logoBg: pickBg(id),
+    logoInitial: (company.name || "?").charAt(0).toUpperCase(),
+  };
+}
 
 export function CompaniesList() {
   const { openModal } = useRegisterCompanyModal();
+  const [companies, setCompanies] = useState<CompanyCard[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      console.log("[CompaniesList] fetching…");
+      setIsLoading(true);
+      setError(null);
+      const result = await getAllCompaniesAction();
+      console.log("[CompaniesList] result", result);
+      if (cancelled) return;
+      if (!result.ok) {
+        setError(result.message);
+        setCompanies([]);
+      } else {
+        setCompanies(result.companies.map(toCard));
+      }
+      setIsLoading(false);
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <section className="w-full">
@@ -89,67 +111,75 @@ export function CompaniesList() {
         </Button>
       </header>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {companies.map((company) => (
-          <article
-            key={company.id}
-            className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[#181818] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div
-                  className={`flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/10 ${company.logoBg}`}
-                >
-                  <span
-                    className={`text-sm font-semibold ${
-                      company.logoBg === "bg-white" ? "text-black" : "text-white"
-                    }`}
-                  >
-                    {company.logoInitial}
-                  </span>
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-white">{company.name}</h2>
-                  <p className="text-xs text-white/50">{company.category}</p>
-                </div>
-              </div>
-              <Chip
-                color={statusColorMap[company.status]}
-                size="sm"
-                variant="soft"
-                className="uppercase"
-              >
-                {company.status}
-              </Chip>
-            </div>
-
-            <p className="text-sm leading-6 text-white/65">{company.description}</p>
-
-            <div className="h-px bg-white/10" />
-
-            <div className="flex items-center justify-between text-xs text-white/60">
-              <span className="inline-flex items-center gap-2">
-                <Icon icon="gravity-ui:pin" className="size-4 text-white/45" />
-                {company.location}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Icon icon="gravity-ui:persons" className="size-4 text-white/45" />
-                {company.employeeRange}
-              </span>
-            </div>
-
-            <a
-              href={company.website}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-white/70 transition hover:text-white"
+      {isLoading ? (
+        <p className="text-sm text-white/55">Loading companies…</p>
+      ) : error ? (
+        <p className="text-sm text-red-400">{error}</p>
+      ) : companies.length === 0 ? (
+        <p className="text-sm text-white/55">No companies registered yet.</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {companies.map((company) => (
+            <article
+              key={company.id}
+              className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-[#181818] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.25)]"
             >
-              <Icon icon="gravity-ui:globe" className="size-4 text-white/60" />
-              Visit Website
-            </a>
-          </article>
-        ))}
-      </div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex size-12 shrink-0 items-center justify-center rounded-xl border border-white/10 ${company.logoBg}`}
+                  >
+                    <span
+                      className={`text-sm font-semibold ${
+                        company.logoBg === "bg-white" ? "text-black" : "text-white"
+                      }`}
+                    >
+                      {company.logoInitial}
+                    </span>
+                  </div>
+                  <div>
+                    <h2 className="text-base font-semibold text-white">{company.name}</h2>
+                    <p className="text-xs text-white/50">{company.category}</p>
+                  </div>
+                </div>
+                <Chip
+                  color={statusColorMap[company.status]}
+                  size="sm"
+                  variant="soft"
+                  className="uppercase"
+                >
+                  {company.status}
+                </Chip>
+              </div>
+
+              <p className="text-sm leading-6 text-white/65">{company.description}</p>
+
+              <div className="h-px bg-white/10" />
+
+              <div className="flex items-center justify-between text-xs text-white/60">
+                <span className="inline-flex items-center gap-2">
+                  <Icon icon="gravity-ui:pin" className="size-4 text-white/45" />
+                  {company.location}
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Icon icon="gravity-ui:persons" className="size-4 text-white/45" />
+                  {company.employeeRange}
+                </span>
+              </div>
+
+              <a
+                href={company.website}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-sm text-white/70 transition hover:text-white"
+              >
+                <Icon icon="gravity-ui:globe" className="size-4 text-white/60" />
+                Visit Website
+              </a>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
