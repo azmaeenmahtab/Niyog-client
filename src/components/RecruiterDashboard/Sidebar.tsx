@@ -15,7 +15,7 @@ export function Sidebar() {
     { icon: House, label: "Home", href: "/dashboard" },
     { icon: Plus, label: "Post Job", href: "/dashboard/recruiter/jobs/new" },
     { icon: Bell, label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
-    { icon: Envelope, label: "Messages", href: "/dashboard/messages" },
+    { icon: Envelope, label: "Companies", href: "/dashboard/recruiter/companies" },
     { icon: Person, label: "Profile", href: "/dashboard/profile" },
     { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
