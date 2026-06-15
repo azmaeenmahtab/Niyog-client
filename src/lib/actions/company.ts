@@ -10,6 +10,7 @@ export interface RegisterCompanyPayload {
   employeeRange: string;
   description: string;
   logoUrl: string | null;
+  recruiterId: string;
 }
 
 export interface RegisterCompanyResult {
@@ -69,23 +70,24 @@ export interface Company {
   logoUrl: string | null;
 }
 
-export interface GetAllCompaniesResult {
+export interface GetCompanyResult {
   ok: boolean;
   message: string;
-  companies: Company[];
+  company: Company | null;
 }
 
-export async function getAllCompaniesAction(): Promise<GetAllCompaniesResult> {
+export async function getCompanyAction(recruiterId: string): Promise<GetCompanyResult> {
   try {
-    console.log("[getAllCompaniesAction] fetching", `${API_BASE_URL}/api/all-companies`);
-    const res = await fetch(`${API_BASE_URL}/api/all-companies`, {
+    const url = `${API_BASE_URL}/api/recruiter-company?recruiterId=${encodeURIComponent(recruiterId)}`;
+    console.log("[getCompanyAction] fetching", url);
+    const res = await fetch(url, {
       method: "GET",
     });
 
     const data = (await res.json().catch(() => ({}))) as {
       success?: boolean;
       message?: string;
-      data?: Company[];
+      data?: Company | null;
       error?: string;
     };
 
@@ -93,18 +95,18 @@ export async function getAllCompaniesAction(): Promise<GetAllCompaniesResult> {
       return {
         ok: false,
         message: data.message || data.error || `Request failed (${res.status})`,
-        companies: [],
+        company: null,
       };
     }
 
     return {
       ok: true,
-      message: data.message || "Companies fetched successfully",
-      companies: Array.isArray(data.data) ? data.data : [],
+      message: data.message || "Company fetched successfully",
+      company: data.data ?? null,
     };
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Network error. Please try again.";
-    return { ok: false, message, companies: [] };
+    return { ok: false, message, company: null };
   }
 }

@@ -10,6 +10,7 @@ import {
   RegisterCompanyAction,
   type RegisterCompanyPayload,
 } from "@/lib/actions/company";
+import { useSession } from "@/lib/auth-client";
 
  
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -91,6 +92,7 @@ async function uploadToImgbb(file: File): Promise<string> {
 
 export function RegisterCompanyModal() {
   const { isOpen, closeModal } = useRegisterCompanyModal();
+  const { data: session, isPending: sessionPending } = useSession();
 
   const [mounted, setMounted]         = useState(false);
   const [fields, setFields]           = useState<FormFields>(EMPTY_FORM);
@@ -152,6 +154,17 @@ export function RegisterCompanyModal() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    if (sessionPending) return;
+
+    const recruiterId = session?.user?.id;
+    if (!recruiterId) {
+      setErrors((prev) => ({
+        ...prev,
+        logoUrl: "You must be logged in to register a company.",
+      }));
+      return;
+    }
+
     const nextErrors = validate(fields);
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
@@ -164,7 +177,7 @@ export function RegisterCompanyModal() {
         logoUrl = await uploadToImgbb(logoFile);
       }
 
-      const payload: RegisterCompanyPayload = { ...fields, logoUrl };
+      const payload: RegisterCompanyPayload = { ...fields, logoUrl, recruiterId };
       const result = await RegisterCompanyAction(payload);
 
       if (!result.ok) {
