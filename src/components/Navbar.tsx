@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Oswald } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleUser } from "@fortawesome/free-regular-svg-icons";
-import whitelogo from "@/assets/whitelogo.png";
+import blacklogo from "@/assets/blacklogo.png";
 import { useSession } from "@/lib/auth-client";
 import type { SessionUser } from "@/lib/auth-types";
 import { authClient } from "@/lib/auth-client";
@@ -41,17 +41,17 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full px-4 pt-6 bg-transparent">
-      <header className="mx-auto flex w-full max-w-337.5 items-center justify-between rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-3 shadow-[0_10px_40px_rgba(0,0,0,0.28)] backdrop-blur-md sm:px-6">
+    <nav className="sticky top-0 z-40 w-full bg-[#f3ede2] px-4 pt-5 sm:px-6 lg:px-8">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-black/5 bg-white/80 px-5 py-2.5 shadow-[0_8px_24px_rgba(40,24,8,0.06)] backdrop-blur-md sm:px-7">
         <div className="flex items-center gap-3">
           <button
-            className="rounded-full p-2 text-white/80 transition hover:bg-white/10 hover:text-white md:hidden"
+            className="rounded-full p-2 text-[#1a1a1a]/80 transition hover:bg-black/5 hover:text-[#1a1a1a] md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
           >
             <svg
-              className="h-6 w-6"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -73,100 +73,122 @@ export default function Navbar() {
               )}
             </svg>
           </button>
-          <div className="flex items-center gap-2">
+
+          <Link href="/" className="flex items-center gap-2">
             <Image
-              src={whitelogo}
+              src={blacklogo}
               alt="Niyog"
-              className="h-8 w-auto"
+              className="h-7 w-auto"
               priority
             />
-            <span className={`${oswald.className} inline-block text-[24px] font-semibold italic tracking-[0.06em] text-white -skew-x-12`}>
+            <span
+              className={`${oswald.className} text-[22px] font-semibold italic tracking-[0.04em] text-[#e2613a] -skew-x-12`}
+            >
               Niyog
             </span>
-          </div>
-        </div>
-        <div className="ml-auto hidden items-center gap-8 md:flex">
-          <ul className="flex items-center gap-8 text-[15px] text-white/85">
+          </Link>
+
+          <ul className="ml-7 hidden items-center gap-7 text-[14px] text-[#1a1a1a]/75 md:flex">
             {navItems.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="transition-colors hover:text-white">
+                <Link
+                  href={item.href}
+                  className="transition-colors hover:text-[#1a1a1a]"
+                >
                   {item.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href={userRole === "applicant" ? "/dashboard/applicant" : userRole === "recruiter" ? "/dashboard/recruiter" : "#"} className="transition-colors hover:text-white">
+              <Link
+                href={
+                  userRole === "applicant"
+                    ? "/dashboard/applicant"
+                    : userRole === "recruiter"
+                    ? "/dashboard/recruiter"
+                    : "#"
+                }
+                className="transition-colors hover:text-[#1a1a1a]"
+              >
                 Dashboard
               </Link>
             </li>
           </ul>
+        </div>
+
+        <div className="flex items-center gap-4">
           {isLoggedIn ? (
-            <div className="flex items-center gap-4">
-              <button onClick={handlelogout} className="border-l border-white/20 pl-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white cursor-pointer">
+            <>
+              <button
+                onClick={handlelogout}
+                className="hidden text-[14px] text-[#1a1a1a]/70 transition-colors hover:text-[#1a1a1a] sm:inline cursor-pointer"
+              >
                 Logout
               </button>
               <div
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 cursor-pointer bg-white/8 text-white shadow-[0_8px_20px_rgba(0,0,0,0.18)]"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-[#f3ede2] text-[#1a1a1a]/80"
                 title={session?.user?.name || session?.user?.email || "Account"}
                 aria-label="Logged in account"
               >
-                <FontAwesomeIcon icon={faCircleUser} className="h-auto w-5" />
+                <FontAwesomeIcon icon={faCircleUser} className="h-5 w-5" />
               </div>
-            </div>
+            </>
           ) : (
-            <div className="flex items-center gap-4">
+            <>
               <Link
                 href="/auth/login"
-                className="border-l border-white/20 pl-4 text-[15px] text-[#6e63ff] transition-colors hover:text-white"
+                className="hidden text-[14px] text-[#1a1a1a]/75 transition-colors hover:text-[#1a1a1a] sm:inline"
               >
-                Sign In
+                Logout
               </Link>
-              <Link
-                href="/auth/signup"
-                className="rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-110"
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-[#f3ede2] text-[#1a1a1a]/80"
+                aria-label="Account"
               >
-                Get Started
-              </Link>
-            </div>
+                <FontAwesomeIcon icon={faCircleUser} className="h-5 w-5" />
+              </div>
+            </>
           )}
         </div>
       </header>
+
       {isMenuOpen && (
-        <div className="mx-auto mt-2 w-full max-w-275 rounded-[18px] border border-white/10 bg-[#1e1e1e] px-4 py-4 shadow-[0_10px_40px_rgba(0,0,0,0.28)] md:hidden">
-          <ul className="flex flex-col gap-1 text-white/85">
+        <div className="mx-auto mt-2 w-full max-w-6xl rounded-3xl border border-black/5 bg-white px-4 py-4 shadow-[0_8px_24px_rgba(40,24,8,0.06)] md:hidden">
+          <ul className="flex flex-col gap-1 text-[#1a1a1a]/80">
             {navItems.map((item) => (
               <li key={item.label}>
-                <Link href={item.href} className="block rounded-xl px-3 py-3 transition hover:bg-white/10 hover:text-white">
+                <Link
+                  href={item.href}
+                  className="block rounded-xl px-3 py-3 transition hover:bg-black/5 hover:text-[#1a1a1a]"
+                >
                   {item.label}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href={
+                  userRole === "applicant"
+                    ? "/dashboard/applicant"
+                    : userRole === "recruiter"
+                    ? "/dashboard/recruiter"
+                    : "#"
+                }
+                className="block rounded-xl px-3 py-3 transition hover:bg-black/5 hover:text-[#1a1a1a]"
+              >
+                Dashboard
+              </Link>
+            </li>
             {isLoggedIn ? (
-              <li className="mt-2 border-t border-white/10 pt-3">
-                <div
-                  className="flex items-center gap-3 rounded-xl px-2 py-2 text-white"
-                  title={session?.user?.name || session?.user?.email || "Account"}
+              <li className="mt-2 border-t border-black/5 pt-3">
+                <button
+                  onClick={handlelogout}
+                  className="block w-full rounded-xl px-3 py-3 text-left text-[#1a1a1a]/75 transition hover:bg-black/5 hover:text-[#1a1a1a]"
                 >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/8 text-white">
-                    <FontAwesomeIcon icon={faCircleUser} className="h-5 w-5" />
-                  </span>
-                  <span className="text-sm font-medium text-white/75">Account</span>
-                </div>
+                  Logout
+                </button>
               </li>
-            ) : (
-              <>
-                <li className="mt-2 border-t border-white/10 pt-3">
-                  <Link href="/auth/login" className="block rounded-xl px-3 py-3 text-[#6e63ff] transition hover:bg-white/10 hover:text-white">
-                    Sign In
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/auth/signup" className="mt-1 block rounded-3xl bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 py-3 text-center font-semibold text-white shadow-[0_10px_24px_rgba(111,98,255,0.35)] transition hover:brightness-110">
-                    Get Started
-                  </Link>
-                </li>
-              </>
-            )}
+            ) : null}
           </ul>
         </div>
       )}

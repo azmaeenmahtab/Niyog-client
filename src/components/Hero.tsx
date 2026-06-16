@@ -1,72 +1,106 @@
 "use client";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
-import HeroText from "@/components/HeroText";
-import globeImage from "@/assets/Group.png";
-
-const starSeed = [
-  { top: 6, left: 10, size: 3, delay: 0.2 },
-  { top: 12, left: 24, size: 2, delay: 1.1 },
-  { top: 8, left: 40, size: 3, delay: 0.7 },
-  { top: 15, left: 68, size: 2, delay: 0.4 },
-  { top: 10, left: 84, size: 3, delay: 1.4 },
-  { top: 22, left: 16, size: 2, delay: 0.9 },
-  { top: 26, left: 52, size: 2, delay: 1.7 },
-  { top: 30, left: 77, size: 3, delay: 1.2 },
-  { top: 38, left: 9, size: 2, delay: 0.5 },
-  { top: 42, left: 91, size: 2, delay: 0.8 },
-  { top: 49, left: 20, size: 3, delay: 1.6 },
-  { top: 56, left: 74, size: 2, delay: 0.3 },
-];
-
-const stars = Array.from({ length: 5 }, (_, layerIndex) =>
-  starSeed.map((star, starIndex) => ({
-    top: `${(star.top + layerIndex * 8 + (starIndex % 3) * 1.5) % 100}%`,
-    left: `${(star.left + layerIndex * 13 + (starIndex % 4) * 1.2) % 100}%`,
-    size: star.size,
-    delay: star.delay + layerIndex * 0.35,
-  }))
-).flat();
-
 export default function Hero() {
+  const trendingItems = [
+    "Product Designer",
+    "AI Engineering",
+    "Dev-ops Engineer",
+  ];
+
   return (
-    <section className="relative isolate overflow-hidden bg-[#050505] text-white pt-10">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(88,76,255,0.22),transparent_34%),linear-gradient(180deg,#090909_0%,#040404_100%)]" />
-
-      <div className="absolute inset-0 overflow-hidden">
-        {stars.map((star, index) => (
-          <motion.span
-            key={`${star.top}-${star.left}-${index}`}
-            className="absolute rounded-full bg-[#aca7ff] shadow-[0_0_12px_rgba(132,118,255,0.9)]"
-            style={{
-              top: star.top,
-              left: star.left,
-              width: star.size,
-              height: star.size,
-            }}
-            animate={{ opacity: [0.15, 1, 0.15], scale: [1, 1.6, 1] }}
-            transition={{ duration: 4.5, delay: star.delay, repeat: Infinity, ease: "easeInOut" }}
+    <section className="relative w-full bg-[#f3ede2] text-[#1a1a1a]">
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-16 pt-12 text-center sm:px-6 lg:px-8 lg:pt-16">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/55 px-4 py-1.5 text-[12px] font-medium text-[#1a1a1a]/75 shadow-[0_4px_20px_rgba(40,24,8,0.05)] backdrop-blur-md">
+          <span
+            aria-hidden="true"
+            className="inline-block size-1.5 rounded-full bg-[#e2613a]"
           />
-        ))}
-      </div>
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-[-12vw] flex justify-center sm:bottom-[-15vw] lg:bottom-[-35vw]">
-        <div className="relative aspect-square w-[132vw] max-w-350 sm:w-[126vw] lg:w-[120vw]">
-          <div className="absolute inset-[7%] flex items-center justify-center opacity-92">
-            <Image
-              src={globeImage}
-              alt="Animated globe"
-              className="h-full w-full object-contain drop-shadow-[0_0_30px_rgba(98,82,255,0.45)]"
-              priority
-            />
-          </div>
-          <div className="absolute inset-[4%] rounded-full shadow-[inset_0_0_130px_rgba(0,0,0,0.74),inset_0_20px_90px_rgba(255,255,255,0.04)]" />
+          <span className="font-semibold text-[#1a1a1a]">50,000+</span>
+          <span className="tracking-[0.18em] text-[#1a1a1a]/55">
+            NEW JOBS THIS MONTH
+          </span>
         </div>
-      </div>
 
-      <div className="relative z-10 mx-auto flex min-h-245 w-full max-w-7xl items-start justify-center px-4 pb-20 pt-16 sm:px-6 lg:px-8">
-        <HeroText />
+        <h1 className="mt-7 font-serif text-4xl font-medium tracking-tight text-[#1a1a1a] sm:text-5xl lg:text-[68px] lg:leading-[1.05]">
+          Find Your Dream{" "}
+          <span className="font-serif italic font-medium text-[#e2613a]">
+            Job
+          </span>{" "}
+          Today
+        </h1>
+
+        <p className="mt-5 max-w-2xl font-serif text-[15px] leading-7 text-[#1a1a1a]/65 sm:text-base">
+          HireLoop connects top talent with world-class companies. Browse
+          thousands of curated opportunities and land your next role — faster.
+        </p>
+
+        <form className="mt-10 w-full max-w-3xl">
+          <div className="flex flex-col items-stretch gap-2 rounded-2xl border border-white/40 bg-white/55 p-2 shadow-[0_10px_30px_rgba(40,24,8,0.06)] backdrop-blur-md sm:flex-row sm:items-center sm:gap-1">
+            <label className="flex flex-1 items-center gap-2 px-3 py-2 text-[#1a1a1a]/55">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4 shrink-0 fill-none stroke-current stroke-[1.8]"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" strokeLinecap="round" />
+              </svg>
+              <span className="text-[14px]">Job title, skill or company</span>
+            </label>
+
+            <span
+              className="hidden h-6 w-px bg-[#1a1a1a]/10 sm:block"
+              aria-hidden="true"
+            />
+
+            <label className="flex flex-1 items-center gap-2 px-3 py-2 text-[#1a1a1a]/55 sm:border-l sm:border-[#1a1a1a]/5">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4 shrink-0 fill-none stroke-current stroke-[1.8]"
+                aria-hidden="true"
+              >
+                <path d="M12 21s6-5.5 6-10a6 6 0 1 0-12 0c0 4.5 6 10 6 10Z" />
+                <circle cx="12" cy="11" r="2" />
+              </svg>
+              <span className="text-[14px]">Location or Remote</span>
+            </label>
+
+            <button
+              type="submit"
+              aria-label="Search jobs"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#e2613a] px-5 text-[14px] font-semibold text-white shadow-[0_8px_18px_rgba(226,97,58,0.35)] transition hover:brightness-105"
+            >
+              <span>Search</span>
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4 fill-none stroke-current stroke-2"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5 12h14M13 5l7 7-7 7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:gap-4">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#1a1a1a]/50">
+            Trending Position
+          </span>
+          <div className="flex flex-wrap justify-center gap-2">
+            {trendingItems.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/40 bg-white/55 px-4 py-1.5 text-[13px] text-[#1a1a1a]/70 shadow-[0_4px_12px_rgba(40,24,8,0.04)] backdrop-blur-md"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );

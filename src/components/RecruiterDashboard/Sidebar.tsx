@@ -12,7 +12,7 @@ interface NavItem {
 
 export function Sidebar() {
   const navItems: NavItem[] = [
-    { icon: House, label: "Home", href: "/dashboard" },
+    { icon: House, label: "Home", href: "/dashboard/recruiter" },
     { icon: Plus, label: "Post Job", href: "/dashboard/recruiter/jobs/new" },
     { icon: Bell, label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
     { icon: Envelope, label: "Company Profile", href: "/dashboard/recruiter/company-profile" },

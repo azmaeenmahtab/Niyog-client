@@ -1,55 +1,82 @@
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faBriefcase, faClock, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { Icon } from "@iconify/react";
 
-const jobs = [
+type Job = {
+  title: string;
+  description: string;
+  location: string;
+  salary: string;
+  type: "Full-Time" | "Contract" | "Part-Time";
+  icon: string;
+};
+
+const jobs: Job[] = [
   {
-    title: "Frontend Developer",
-    description: "Build polished interfaces for a fast-growing product team focused on modern web experiences.",
+    title: "Senior Product Designer",
+    description:
+      "Lead the design of our core platform, focusing on high-end user experiences and craft-led interfaces.",
+    location: "Remote",
+    salary: "$85/hr",
+    type: "Full-Time",
+    icon: "solar:palette-round-bold",
+  },
+  {
+    title: "Backend Engineer",
+    description:
+      "Architect scalable systems using modern cloud infrastructure and high-performance Go services.",
+    location: "San Francisco",
+    salary: "$120/hr",
+    type: "Contract",
+    icon: "solar:code-square-bold",
+  },
+  {
+    title: "Marketing Lead",
+    description:
+      "Define our brand voice and drive growth through curated storytelling and strategic partnerships.",
+    location: "London / Hybrid",
+    salary: "$95/hr",
+    type: "Full-Time",
+    icon: "solar:megaphone-bold",
+  },
+  {
+    title: "Frontend Engineer",
+    description:
+      "Ship polished interfaces for a fast-growing product team focused on modern web experiences.",
     location: "New York, USA",
-    workMode: "Hybrid",
-    salary: "€25-€40/hour",
+    salary: "$70/hr",
+    type: "Full-Time",
+    icon: "solar:monitor-smartphone-bold",
   },
   {
-    title: "UI Engineer",
-    description: "Own accessible component systems and visual quality across consumer and admin surfaces.",
+    title: "Data Scientist",
+    description:
+      "Build forecasting models and experiment frameworks that inform product and growth decisions.",
     location: "Berlin, Germany",
-    workMode: "Remote",
-    salary: "€30-€45/hour",
+    salary: "$90/hr",
+    type: "Contract",
+    icon: "solar:chart-square-bold",
   },
   {
-    title: "Product Designer",
-    description: "Shape product direction with user journeys, wireframes, and high-fidelity handoff work.",
-    location: "London, UK",
-    workMode: "On-site",
-    salary: "€28-€42/hour",
-  },
-  {
-    title: "Full Stack Developer",
-    description: "Ship end-to-end features spanning frontend, APIs, and performance-sensitive backend flows.",
+    title: "Customer Success Manager",
+    description:
+      "Own relationships with enterprise customers and turn feedback into product improvements.",
     location: "Toronto, Canada",
-    workMode: "Hybrid",
-    salary: "€35-€50/hour",
-  },
-  {
-    title: "Motion Designer",
-    description: "Create expressive motion systems for landing pages, product transitions, and brand moments.",
-    location: "Paris, France",
-    workMode: "Remote",
-    salary: "€24-€36/hour",
-  },
-  {
-    title: "Frontend Architect",
-    description: "Guide scalable UI architecture, design tokens, and code quality for a multi-product platform.",
-    location: "Amsterdam, Netherlands",
-    workMode: "Hybrid",
-    salary: "€40-€60/hour",
+    salary: "$60/hr",
+    type: "Part-Time",
+    icon: "solar:users-group-rounded-bold",
   },
 ];
 
-function InfoPill({ children }: { children: React.ReactNode }) {
+function MetaItem({
+  icon,
+  children,
+}: {
+  icon: string;
+  children: React.ReactNode;
+}) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-white/6 px-3 py-1 text-white/80 ring-1 ring-white/8">
+    <span className="inline-flex items-center gap-1.5 text-[13px] text-[#1a1a1a]/70">
+      <Icon icon={icon} className="size-4 text-[#1a1a1a]/55" />
       {children}
     </span>
   );
@@ -57,64 +84,63 @@ function InfoPill({ children }: { children: React.ReactNode }) {
 
 export default function JobDiscovery() {
   return (
-    <section className="bg-[#050505] px-4 pb-24 pt-10 text-white sm:px-6 lg:px-8">
+    <section className="bg-[#f3ede2] px-4 pb-24 pt-12 text-[#1a1a1a] sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-7xl">
-        <div className="text-center">
-          <div className="inline-flex items-center gap-2 text-[13px] uppercase tracking-[0.35em] text-white/55">
-            <span className="h-1.5 w-1.5 rounded-sm bg-[#5f55ff]" />
-            <span>Smart Job Discovery</span>
-            <span className="h-1.5 w-1.5 rounded-sm bg-[#5f55ff]" />
-          </div>
-
-          <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-semibold tracking-tight text-white sm:text-4xl lg:text-[48px] lg:leading-[1.05]">
-            The Roles you&apos;d never find by searching
+        <div className="flex items-end justify-between gap-6">
+          <h2 className="font-serif text-3xl font-medium italic tracking-tight text-[#1a1a1a] sm:text-4xl lg:text-[44px] lg:leading-[1.05]">
+            Recent Opportunities
           </h2>
+          <Link
+            href="#"
+            className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#1a1a1a] transition hover:text-[#e2613a]"
+          >
+            View all jobs
+            <Icon icon="solar:arrow-right-linear" className="size-4" />
+          </Link>
         </div>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {jobs.map((job) => (
             <article
               key={`${job.title}-${job.location}`}
-              className="flex h-full min-h-80 flex-col justify-between rounded-[18px] bg-[#171717] px-6 py-8 shadow-[0_16px_40px_rgba(0,0,0,0.28)] ring-1 ring-white/5"
+              className="flex h-full flex-col rounded-2xl bg-[#faf6ec] p-6 ring-1 ring-[#1a1a1a]/8 shadow-[0_12px_30px_rgba(40,24,8,0.04)] sm:p-7"
             >
-              <h3 className="text-2xl font-medium leading-tight text-white">
+              <div className="flex items-center justify-between">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-[#fbe8d8] text-[#e2613a]">
+                  <Icon icon={job.icon} className="size-5" />
+                </span>
+                <span className="rounded-full bg-[#fbe8d8] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#e2613a]">
+                  {job.type}
+                </span>
+              </div>
+
+              <h3 className="mt-6 font-serif text-[22px] font-semibold leading-tight text-[#1a1a1a]">
                 {job.title}
               </h3>
 
-              <p className="mt-3 leading-6 text-white/45">
+              <p className="mt-3 text-[14px] leading-6 text-[#1a1a1a]/65">
                 {job.description}
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2">
-                <InfoPill>
-                  <FontAwesomeIcon icon={faLocationDot} className="w-4 text-[#d39be8]" />
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+                <MetaItem icon="solar:map-point-linear">
                   {job.location}
-                </InfoPill>
-                <InfoPill>
-                  <FontAwesomeIcon icon={faBriefcase} className="w-4 text-[#d39be8]" />
-                  {job.workMode}
-                </InfoPill>
-                <InfoPill>
-                  <FontAwesomeIcon icon={faClock} className="w-4 text-[#d39be8]" />
-                  {job.salary}
-                </InfoPill>
+                </MetaItem>
+                <MetaItem icon="solar:dollar-linear">
+                  <span className="font-semibold text-[#1a1a1a]">{job.salary}</span>
+                </MetaItem>
               </div>
 
-              <Link
-                href="#"
-                className="inline-flex items-center gap-2 pt-10 text-[14px] font-medium text-white transition hover:text-[#cfc8ff]"
-              >
-                Apply Now
-                <FontAwesomeIcon icon={faArrowRight} className="text-[12px] w-5" />
-              </Link>
+              <div className="mt-7 pt-2">
+                <Link
+                  href="#"
+                  className="block w-full rounded-xl bg-[#e2613a] px-5 py-3 text-center text-[14px] font-semibold text-white shadow-[0_8px_18px_rgba(226,97,58,0.25)] transition hover:bg-[#c9522f]"
+                >
+                  Apply Now
+                </Link>
+              </div>
             </article>
           ))}
-        </div>
-
-        <div className="mt-10 flex justify-center">
-          <button className="rounded-xl bg-white px-6 py-3 text-[14px] font-medium text-[#111] shadow-[0_10px_24px_rgba(255,255,255,0.12)] transition hover:brightness-95">
-            View all job open
-          </button>
         </div>
       </div>
     </section>
