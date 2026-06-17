@@ -114,7 +114,7 @@ export function JobsTable() {
                 </Checkbox.Control>
               </Checkbox>
             </Table.Column>
-            <Table.Column allowsSorting id="title">
+            <Table.Column allowsSorting id="title" isRowHeader>
               {({ sortDirection }) => (
                 <SortableColumnHeader sortDirection={sortDirection}>Job Role</SortableColumnHeader>
               )}

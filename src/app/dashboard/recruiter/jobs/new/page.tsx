@@ -6,7 +6,8 @@ import { InputCustom, Textarea, Toggle } from "@/components/RecruiterDashboard/F
 import { usePostJobForm } from "./usePostJobForm";
 import { Label, ListBox, Select } from "@heroui/react";
 import { Calendar, DateField, DatePicker } from "@heroui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getRecruiterCompanyDataById } from "@/lib/reusableFunctions/reusables";
 
 const JOB_CATEGORIES = [
   { id: "engineering", name: "Engineering" },
@@ -41,14 +42,27 @@ const CURRENCIES = [
 
 export default function PostJobPage() {
   const { data: session } = useSession();
+  console.log("user session ",session)
+  const user = session?.user
   const router = useRouter();
 
   const [jobCategory, setJobCategory] = useState("");
   const [jobType, setJobType] = useState("");
   const [currency, setCurrency] = useState("");
+  const [company, setCompany] = useState<{id?:string, name?: string; industry?: string, logoUrl?: string } | null>(null);
 
-  const company = { id: "abc123", name: "Niyog Inc.", industry: "Technology" };
-
+  useEffect(() => {
+    if (!user?.id) return;
+    let cancelled = false;
+    getRecruiterCompanyDataById(user.id).then((data) => {
+      if (cancelled) return;
+      setCompany(data ? {id:data._id, name: data.name, industry: data.industry, logoUrl:data.logoUrl } : null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+ 
   const {
     fields, errors, isRemote, setIsRemote,
     handleChange, handleSubmit, isSubmitting, setField,

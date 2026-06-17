@@ -21,9 +21,10 @@ type FieldKey = keyof JobFormFields;
 type FormErrors = Partial<Record<FieldKey, string>>;
 
 interface Company {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   industry?: string;
+  logoUrl?: string;
 }
 
 interface Recruiter {
@@ -99,9 +100,14 @@ export function usePostJobForm({ company, recruiter }: UsePostJobFormOptions) {
         isRemote,
         status: "active",
         companyId: company?.id,
+        companyLogoUrl: company.logoUrl,
+        companyName: company.name,
+        companyIndustry: company.industry,
         recruiterId: recruiter?.id,
         postedAt: new Date().toISOString(),
       };
+
+      console.log("payload ", payload);
 
       await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
         method: "POST",

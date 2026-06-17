@@ -1,18 +1,17 @@
-import { getSession } from "better-auth/api";
-import { getCompanyAction } from "../actions/company";
-import { authClient } from "@/lib/auth-client";
-import { headers } from "next/headers";
-import { auth } from "../auth";
 
 
+// for client components — fetches from the backend API to avoid pulling
+// server-only modules (next/headers, MongoClient) into the client bundle.
+export const getRecruiterCompanyDataById = async (recruiterId: string) => {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
 
-export const getRecruiterCompanyData = async () => {
-  const user = await auth.api.getSession({
-    headers: await headers(),
-  });
-//   console.log( "user", user);
-  const recruiterId = user?.user?.id;
+  const res = await fetch(
+    `${baseUrl}/api/recruiter-company?recruiterId=${encodeURIComponent(recruiterId)}`,
+    { cache: "no-store" }
+  );
 
-    const companies = await getCompanyAction(recruiterId);
-    return companies;
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json?.data ?? null;
 };
