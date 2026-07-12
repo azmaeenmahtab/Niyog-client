@@ -8,7 +8,7 @@ if (!mongoUri) {
 }
 
 const client = new MongoClient(mongoUri);
-const db = client.db();
+const db = client.db('niyog_db');
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
@@ -31,6 +31,8 @@ export const auth = betterAuth({
           role: {
               type: "string",
               input: true,
+              required: true,
+              defaultValue: "applicant",
             } 
         }
   }

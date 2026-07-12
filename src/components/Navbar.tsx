@@ -25,7 +25,7 @@ export default function Navbar() {
   const userRole = (session?.user as SessionUser | undefined)?.role;
 
   const navItems = [
-    { label: "Browse Jobs", href: "#" },
+    { label: "Browse Jobs", href: "/jobs" },
     { label: "Company", href: "#" },
     { label: "Pricing", href: "#" },
   ];
@@ -104,9 +104,8 @@ export default function Navbar() {
                 href={
                   userRole === "applicant"
                     ? "/dashboard/applicant"
-                    : userRole === "recruiter"
-                    ? "/dashboard/recruiter"
-                    : "#"
+                    :"/dashboard/recruiter"
+                    
                 }
                 className="transition-colors hover:text-[#1a1a1a]"
               >

@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 export default function Hero() {
   const trendingItems = [
     "Product Designer",
@@ -7,26 +9,55 @@ export default function Hero() {
     "Dev-ops Engineer",
   ];
 
+  const headings = ["Dream Job", "Next Adventure", "Tech Career"];
+  const [index, setIndex] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false);
+      setTimeout(() => {
+        setIndex((prevIndex) => (prevIndex + 1) % headings.length);
+        setVisible(true);
+      }, 300);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative w-full bg-[#f3ede2] text-[#1a1a1a]">
       <div className="mx-auto flex w-full max-w-5xl flex-col items-center px-4 pb-16 pt-12 text-center sm:px-6 lg:px-8 lg:pt-16">
+        
+        {/* --- BADGE WITH RADAR DOT --- */}
         <div className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/55 px-4 py-1.5 text-[12px] font-medium text-[#1a1a1a]/75 shadow-[0_4px_20px_rgba(40,24,8,0.05)] backdrop-blur-md">
-          <span
-            aria-hidden="true"
-            className="inline-block size-1.5 rounded-full bg-[#e2613a]"
-          />
+          <span className="relative flex size-2">
+            {/* Radar ring ripple */}
+            <span
+              aria-hidden="true"
+              className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e2613a] opacity-75"
+            />
+            {/* Core solid dot */}
+            <span
+              aria-hidden="true"
+              className="relative inline-flex size-1.5 rounded-full bg-[#e2613a]"
+            />
+          </span>
           <span className="font-semibold text-[#1a1a1a]">50,000+</span>
           <span className="tracking-[0.18em] text-[#1a1a1a]/55">
             NEW JOBS THIS MONTH
           </span>
         </div>
 
+        {/* --- ANIMATED HEADING --- */}
         <h1 className="mt-7 font-serif text-4xl font-medium tracking-tight text-[#1a1a1a] sm:text-5xl lg:text-[68px] lg:leading-[1.05]">
-          Find Your Dream{" "}
-          <span className="font-serif italic font-medium text-[#e2613a]">
-            Job
-          </span>{" "}
-          Today
+          Find Your{" "}
+          <span
+            className={`inline-block font-serif italic font-medium text-[#e2613a] transition-all duration-300 ease-in-out transform ${
+              visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+            }`}
+          >
+            {headings[index]}
+          </span>
         </h1>
 
         <p className="mt-5 max-w-2xl font-serif text-[15px] leading-7 text-[#1a1a1a]/65 sm:text-base">

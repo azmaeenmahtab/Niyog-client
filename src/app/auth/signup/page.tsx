@@ -9,6 +9,7 @@ import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import whitelogo from "@/assets/whitelogo.png";
 import { signIn, signUp } from "@/lib/auth-client";
 import { RoleRadioGroup } from "@/components/RadioGroupRole";
+import {updateUserRole} from "@/lib/api/user"
 
 const oswald = Oswald({
   subsets: ["latin"],
@@ -88,6 +89,7 @@ export default function SignupPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [rolechosen, setRoleChosen] = useState(false);
   const [rolewarning, setRoleWarning] = useState("");
+  const [signUpMethod, setSignUpMethod] = useState<"email" | "google">("email");
 
   const errors = useMemo(() => validate(values), [values]);
   const visibleErrors = Object.fromEntries(
@@ -108,6 +110,7 @@ export default function SignupPage() {
 
   const handleEmailSignup = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setSignUpMethod("email");
 
     const nextErrors = validate(values);
     setTouched({
@@ -154,6 +157,7 @@ export default function SignupPage() {
       setRoleWarning("Select a role first.");
       return;
     }
+    setSignUpMethod("google");
     setIsGoogleLoading(true);
     setFormError("");
     setSuccessMessage("");
@@ -162,14 +166,15 @@ export default function SignupPage() {
       const result = await signIn.social({
         provider: "google",
         callbackURL: "/",
+        additionalData: {
+            role: role,
+        },
       });
 
-      if (result?.error) {
-        setFormError(
-          result.error.message ||
-          "Google signup is not configured yet. Please add the Google OAuth provider."
-        );
-      }
+
+  localStorage.setItem("pendingRole", role);
+
+      // const updatedUser = await updateUserRole(result.userId, role);
     } catch (error) {
       const message = error instanceof Error
         ? error.message

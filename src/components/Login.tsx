@@ -125,6 +125,9 @@ export default function LoginIndex() {
       const result = await signIn.social({
         provider: "google",
         callbackURL: "/",
+        additionalData: {
+            role: 'applicant',
+        },
       });
 
       if (result?.error) {

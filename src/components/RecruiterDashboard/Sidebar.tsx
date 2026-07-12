@@ -1,8 +1,9 @@
-
+'use client';
 import { Bars, Bell, Envelope, Gear, House, Person, Plus } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
 import type { ComponentType } from "react";
+import { useUserInfo } from "@/lib/contexts/userInfoContext";
 
 interface NavItem {
   icon: ComponentType<{ className?: string }>;
@@ -11,7 +12,21 @@ interface NavItem {
 }
 
 export function Sidebar() {
-  const navItems: NavItem[] = [
+  const { user } = useUserInfo();
+  const role = (user as { role?: string } | null)?.role;
+
+  const applicantNavItems: NavItem[] = [
+    { icon: House, label: "Home", href: "/dashboard/applicant" },
+    { icon: Plus, label: "Search Jobs", href: "/jobs" },
+    { icon: Bell, label: "My Applications", href: "/dashboard/applicant/applications" },
+    { icon: Envelope, label: "Saved Jobs", href: "/dashboard/applicant/saved" },
+    { icon: Person, label: "Manage Resume/CV", href: "/dashboard/applicant/resume" },
+    { icon: Gear, label: "Interviews", href: "/dashboard/applicant/interviews" },
+    { icon: Person, label: "Profile", href: "/dashboard/profile" },
+    { icon: Gear, label: "Settings", href: "/dashboard/settings" },
+  ];
+
+  const recruiterNavItems: NavItem[] = [
     { icon: House, label: "Home", href: "/dashboard/recruiter" },
     { icon: Plus, label: "Post Job", href: "/dashboard/recruiter/jobs/new" },
     { icon: Bell, label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
@@ -19,6 +34,8 @@ export function Sidebar() {
     { icon: Person, label: "Profile", href: "/dashboard/profile" },
     { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
+
+  const navItems = role === "applicant" ? applicantNavItems : recruiterNavItems;
 
   const navcontent = (
     <nav className="flex flex-col gap-1">
