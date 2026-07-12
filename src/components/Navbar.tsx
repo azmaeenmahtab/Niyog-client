@@ -101,12 +101,13 @@ export default function Navbar() {
             ))}
             <li>
               <Link
-                href={
-                  userRole === "applicant"
-                    ? "/dashboard/applicant"
-                    :"/dashboard/recruiter"
-                    
-                }
+              href={
+  userRole === "applicant"
+    ? "/dashboard/applicant"
+    : userRole === "admin"
+    ? "/dashboard/admin"
+    : "/dashboard/recruiter"
+}
                 className="transition-colors hover:text-[#1a1a1a]"
               >
                 Dashboard

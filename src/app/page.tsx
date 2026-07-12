@@ -25,6 +25,7 @@ export default function Home() {
         }
       });
   }, [session]);
+  
   return (
     <main className="bg-[#f3ede2] text-[#1a1a1a]">
       <Navbar />

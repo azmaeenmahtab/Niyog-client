@@ -1,5 +1,5 @@
 'use client';
-import { Bars, Bell, Envelope, Gear, House, Person, Plus } from "@gravity-ui/icons";
+import { Bars, Bell, Envelope, Gear, House, Person, Plus, Persons, ShieldCheck, ListCheck } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
 import type { ComponentType } from "react";
@@ -35,7 +35,24 @@ export function Sidebar() {
     { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 
-  const navItems = role === "applicant" ? applicantNavItems : recruiterNavItems;
+  const adminNavItems: NavItem[] = [
+    { icon: House, label: "Home", href: "/dashboard/admin" },
+    { icon: Persons, label: "Manage Users", href: "/dashboard/admin/manage/users" },
+    { icon: ListCheck, label: "Manage Jobs", href: "/dashboard/admin/mangage/jobs" },
+    { icon: ListCheck, label: "Manage Company", href: "/dashboard/admin/manage/company" },
+    { icon: ShieldCheck, label: "Approvals", href: "/dashboard/admin/approvals" },
+    { icon: Bell, label: "Reports", href: "/dashboard/admin/reports" },
+    { icon: Person, label: "Profile", href: "/dashboard/profile" },
+    { icon: Gear, label: "Settings", href: "/dashboard/settings" },
+  ];
+
+  const navItemsByRole: Record<string, NavItem[]> = {
+    applicant: applicantNavItems,
+    recruiter: recruiterNavItems,
+    admin: adminNavItems,
+  };
+
+  const navItems = navItemsByRole[role ?? ""] ?? recruiterNavItems;
 
   const navcontent = (
     <nav className="flex flex-col gap-1">
