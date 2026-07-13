@@ -4,6 +4,8 @@ import { Button, Checkbox, Chip, Table, cn } from "@heroui/react";
 import { Icon } from "@iconify/react";
 import { useEffect, useMemo, useState } from "react";
 import { getAllJobsByCompanyId } from "@/lib/api/jobs";
+import { getCompanyAction } from "@/lib/actions/company";
+import { useSession } from "@/lib/auth-client";
 
 interface Job {
   _id: string;
@@ -60,10 +62,21 @@ export function JobsTable() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const session = useSession()
+  console.log("Session in JobsTable:", session?.data?.user?.id); // Log the session for debugging
+  const recruiterId = session?.data?.user?.id ;
+
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const result = await getAllJobsByCompanyId("abc123", "active");
+        const company = await getCompanyAction(recruiterId);
+        if(!company.ok || !company.company) {
+          setError(company.message || "Failed to fetch company details");
+          return;
+        }
+        const companyId = company.company._id;
+        console.log("Company ID in JobsTable:", companyId); // Log the company ID for debugging
+        const result = await getAllJobsByCompanyId(companyId, "active");
         if (!result?.success) {
           setError(result?.message || "Failed to fetch jobs");
           return;

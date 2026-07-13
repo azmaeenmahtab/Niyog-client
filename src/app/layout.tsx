@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import dns from "node:dns";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <UserInfoProvider>
           <main>
             {children}
+            <Toaster theme="dark" position="top-right" richColors />
           </main>
         </UserInfoProvider>
       </body>

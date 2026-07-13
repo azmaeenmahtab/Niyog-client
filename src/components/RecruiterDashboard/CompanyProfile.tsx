@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useSession } from "@/lib/auth-client";
 
-type CompanyStatus = "pending" | "approved" | "rejected";
+type CompanyStatus = "pending" | "approved" | "declined";
 
 interface CompanyCard {
   id: string;
@@ -26,12 +26,13 @@ interface CompanyCard {
   logoBg: string;
   logoInitial: string;
   logoUrl: string | null;
+
 }
 
 const statusColorMap: Record<CompanyStatus, "warning" | "success" | "danger"> = {
   pending: "warning",
   approved: "success",
-  rejected: "danger",
+  declined: "danger",
 };
 
 const PALETTE = [
@@ -55,7 +56,7 @@ function toCard(company: Company): CompanyCard {
     id,
     name: company.name || "Unnamed company",
     category: company.industry || "Other",
-    status: "pending",
+    status: company.status || "pending",
     description: company.description || "No description provided yet.",
     location: company.location || "Location not set",
     employeeRange: company.employeeRange || "—",

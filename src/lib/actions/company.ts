@@ -68,6 +68,7 @@ export interface Company {
   employeeRange: string;
   description: string;
   logoUrl: string | null;
+  status?: "pending" | "approved" | "declined";
 }
 
 export interface GetCompanyResult {
@@ -110,3 +111,21 @@ export async function getCompanyAction(recruiterId: string): Promise<GetCompanyR
     return { ok: false, message, company: null };
   }
 }
+
+
+// export async function getCompanyByRecruiterId(recruiterId: string){
+//   try {
+//     const response = await fetch(`${API_BASE_URL}/api/company/recruiter/${recruiterId}`, {
+//       method: "GET",
+//       credentials: "include",
+//     });
+//     const result = await response.json();
+//     if (!response.ok) {
+//       throw new Error(result.message || "Failed to fetch company details.");
+//     }
+//     return result;
+//   } catch (error: any) {
+//     console.error("getCompanyByRecruiterId error:", error);
+//     return { success: false, message: error.message || "Network error." };
+//   }
+// }

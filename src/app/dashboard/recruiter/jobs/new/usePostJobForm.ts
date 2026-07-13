@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const INITIAL = {
   title: "",
@@ -86,43 +87,50 @@ export function usePostJobForm({ company, recruiter }: UsePostJobFormOptions) {
     return errs;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) {
-      setErrors(errs);
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        ...fields,
-        isRemote,
-        status: "active",
-        companyId: company?.id,
-        companyLogoUrl: company.logoUrl,
-        companyName: company.name,
-        companyIndustry: company.industry,
-        recruiterId: recruiter?.id,
-        postedAt: new Date().toISOString(),
-      };
+const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  const errs = validate();
+  if (Object.keys(errs).length) {
+    setErrors(errs);
+    return;
+  }
+  setIsSubmitting(true);
+  try {
+    const payload = {
+      ...fields,
+      isRemote,
+      status: "active",
+      companyId: company?.id,
+      companyLogoUrl: company?.logoUrl,
+      companyName: company?.name,
+      companyIndustry: company?.industry,
+      recruiterId: recruiter?.id,
+      postedAt: new Date().toISOString(),
+    };
 
-      console.log("payload ", payload);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-      await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-      setFields(INITIAL);
-      setErrors({});
-      router.push("/dashboard/recruiter/jobs");
-    } finally {
-      setIsSubmitting(false);
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.message || "Failed to post job.");
     }
-  };
+
+    toast.success("Job posted successfully!");
+    setFields(INITIAL);
+    setErrors({});
+    router.push("/dashboard/recruiter/jobs");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Something went wrong.";
+    toast.error(message);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return {
     fields,
