@@ -4,8 +4,8 @@ const footerLinks = ["About", "Terms", "Privacy", "Support"];
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-[#f3ede2] px-4 pb-8 pt-6 text-[#1a1a1a] sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-6xl border-t border-[#1a1a1a]/10 pt-8">
+    <footer className="w-full bg-[#f3ede2] border-t border-[#1a1a1a]/10 px-4 pb-8  text-[#1a1a1a] sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-6xl  pt-8">
         <div className="flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
           <div>
             <span className="font-serif text-2xl italic text-[#1a1a1a]">

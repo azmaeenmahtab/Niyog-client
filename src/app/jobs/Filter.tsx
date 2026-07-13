@@ -80,7 +80,7 @@ export default function Filter() {
   }
 
   return (
-    <aside className="flex w-full flex-col gap-8">
+    <aside className="sticky top-24 flex h-fit w-full flex-col gap-8">
       <div>
         <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]/60">
           Search
@@ -95,7 +95,7 @@ export default function Filter() {
             onChange={(e) => {
               const v = e.target.value;
               setKeyword(v);
-             }}
+            }}
             placeholder="Job title or keyword"
             className="w-full rounded-xl border border-[#1a1a1a]/10 bg-white/70 px-4 py-2.5 text-[14px] text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 focus:outline-none focus:ring-2 focus:ring-[#e2613a]/30"
           />
@@ -105,7 +105,7 @@ export default function Filter() {
             onChange={(e) => {
               const v = e.target.value;
               setPlace(v);
-             }}
+            }}
             placeholder="Location"
             className="w-full rounded-xl border border-[#1a1a1a]/10 bg-white/70 px-4 py-2.5 text-[14px] text-[#1a1a1a] placeholder:text-[#1a1a1a]/40 focus:outline-none focus:ring-2 focus:ring-[#e2613a]/30"
           />
@@ -116,7 +116,7 @@ export default function Filter() {
         <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]/60">
           Job Type
         </h3>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap gap-2.5">
           <label
             key="none-type"
             className="flex cursor-pointer items-center gap-3 text-[14px] text-[#1a1a1a]/80"
@@ -167,7 +167,7 @@ export default function Filter() {
           onChange={(e) => {
             const v = Number(e.target.value);
             setSalary(v);
-           }}
+          }}
           className="mt-3 w-full accent-[#e2613a]"
         />
       </div>
@@ -176,7 +176,7 @@ export default function Filter() {
         <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]/60">
           Location
         </h3>
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-wrap gap-2.5">
           <label
             key="none-location"
             className="flex cursor-pointer items-center gap-3 text-[14px] text-[#1a1a1a]/80"
@@ -207,21 +207,23 @@ export default function Filter() {
           ))}
         </div>
       </div>
+      <div className="flex flex-col gap-2.5">
+        <button
+          type="button"
+          onClick={() => apply({})}
+          className="w-full rounded-xl border border-[#1a1a1a]/15 bg-white/60 py-2 text-[13px] font-semibold text-[#1a1a1a]/60 transition hover:bg-white hover:text-[#1a1a1a]/80"
+        >
+          Apply Filters
+        </button>
+        <button
+          type="button"
+          onClick={clear}
+          className="w-full rounded-xl border border-[#1a1a1a]/15 bg-white/60 py-2 text-[13px] font-semibold text-[#1a1a1a]/60 transition hover:bg-white hover:text-[#1a1a1a]/80"
+        >
+          Clear Filters
+        </button>
+      </div>
 
-      <button
-        type="button"
-        onClick={() => apply({})}
-        className="w-full rounded-xl border border-[#1a1a1a]/15 bg-white/60 py-2 text-[13px] font-semibold text-[#1a1a1a]/60 transition hover:bg-white hover:text-[#1a1a1a]/80"
-      >
-        Apply Filters
-      </button>
-      <button
-        type="button"
-        onClick={clear}
-        className="w-full rounded-xl border border-[#1a1a1a]/15 bg-white/60 py-2 text-[13px] font-semibold text-[#1a1a1a]/60 transition hover:bg-white hover:text-[#1a1a1a]/80"
-      >
-        Clear Filters
-      </button>
 
       <div className="rounded-2xl border border-[#1a1a1a]/10 bg-[#e2613a] p-5 text-white">
         <p className="font-serif text-[22px] italic leading-tight">

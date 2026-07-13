@@ -3,11 +3,22 @@ import Filter from "./Filter";
 import JobsListing, { type JobItem } from "./JobsListing";
 import { getAllJobs } from "@/lib/api/jobs";
 import { getAllJobsQueryParams } from "@/lib/api/jobs";
+import Pagination from "@/app/jobs/Pagination";
 
  
 
 interface JobsPageProps {
   searchParams: Promise<getAllJobsQueryParams>; // ← must be Promise in Next.js 15
+}
+
+interface JobsFetchResult {
+  jobs: JobItem[];
+  pagination: {
+    totalCount: number;
+    totalPages: number;
+    currentPage: number;
+    limit: number;
+  };
 }
 
 const buildBackendUrl = (params: getAllJobsQueryParams) => {
@@ -57,14 +68,16 @@ const mapToJobItem = (doc: any): JobItem => ({
 
 // ... mapToJobItem stays the same ...
 
-async function fetchJobs(params: getAllJobsQueryParams): Promise<JobItem[]> {
+async function fetchJobs(params: getAllJobsQueryParams): Promise<JobsFetchResult> {
   console.log("[page.tsx] fetchJobs() called with params:", params);
+  const fallback: JobsFetchResult = {
+    jobs: [],
+    pagination: { totalCount: 0, totalPages: 1, currentPage: 1, limit: 10 },
+  };
+
   try {
-    // Salary slider scaling before sending to the API helper
     const apiParams: getAllJobsQueryParams = { ...params };
 
-    // Translate the "Remote" / "On-site" string into a boolean for the backend
-    // (DB stores isRemote as a boolean, not a string)
     if (apiParams.location) {
       const loc = apiParams.location.toLowerCase();
       if (loc === "remote") {
@@ -76,33 +89,42 @@ async function fetchJobs(params: getAllJobsQueryParams): Promise<JobItem[]> {
       }
     }
 
+    // page comes straight through from the URL — no scaling needed
     console.log("[page.tsx] apiParams (after copy):", apiParams);
 
     const json = await getAllJobs(apiParams);
-    console.log("[page.tsx] getAllJobs returned JSON keys:", json ? Object.keys(json) : null, "success:", json?.success, "data length:", Array.isArray(json?.data) ? json.data.length : "n/a");
-    if (json && !Array.isArray(json?.data)) {
-      console.log("[page.tsx] non-array data — full json:", JSON.stringify(json).slice(0, 500));
-    }
     const data = Array.isArray(json?.data) ? json.data : [];
-    console.log("[page.tsx] mapped jobs count:", data.length);
-    return data.map(mapToJobItem);
+    const pagination = json?.pagination ?? fallback.pagination;
+
+    console.log("[page.tsx] mapped jobs count:", data.length, "pagination:", pagination);
+
+    return {
+      jobs: data.map(mapToJobItem),
+      pagination,
+    };
   } catch (err) {
     console.error("[page.tsx] fetchJobs error:", err);
-    return [];
+    return fallback;
   }
 }
 
 export default async function JobsPage({ searchParams }: JobsPageProps) {
-  const params = await searchParams; // ← await it
+  const params = await searchParams;
   console.log("[page.tsx] JobsPage raw searchParams:", params);
-  const jobs = await fetchJobs(params);
+  const { jobs, pagination } = await fetchJobs(params);
 
   return (
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[260px_1fr]">
       <Suspense fallback={null}>
         <Filter />
       </Suspense>
-      <JobsListing jobs={jobs} />
+      <div>
+        <JobsListing jobs={jobs} />
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+        />
+      </div>
     </div>
   );
 }
