@@ -20,16 +20,17 @@ export function Sidebar() {
     { icon: Plus, label: "Search Jobs", href: "/jobs" },
     { icon: Bell, label: "My Applications", href: "/dashboard/applicant/applications" },
     { icon: Envelope, label: "Saved Jobs", href: "/dashboard/applicant/saved" },
-    { icon: Person, label: "Manage Resume/CV", href: "/dashboard/applicant/resume" },
-    { icon: Gear, label: "Interviews", href: "/dashboard/applicant/interviews" },
+    // { icon: Person, label: "Manage Resume/CV", href: "/dashboard/applicant/resume" },
+    // { icon: Gear, label: "Interviews", href: "/dashboard/applicant/interviews" },
     { icon: Person, label: "Profile", href: "/dashboard/profile" },
-    { icon: Gear, label: "Settings", href: "/dashboard/settings" },
+    // { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 
   const recruiterNavItems: NavItem[] = [
     { icon: House, label: "Home", href: "/dashboard/recruiter" },
     { icon: Plus, label: "Post Job", href: "/dashboard/recruiter/jobs/new" },
     { icon: Bell, label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
+    { icon: Bell, label: "Manage Applications", href: "/dashboard/recruiter/applications" },
     { icon: Envelope, label: "Company Profile", href: "/dashboard/recruiter/company-profile" },
     { icon: Person, label: "Profile", href: "/dashboard/profile" },
     { icon: Gear, label: "Settings", href: "/dashboard/settings" },

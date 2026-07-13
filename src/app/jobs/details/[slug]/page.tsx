@@ -1,7 +1,13 @@
+'use client';
+
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { getJobById } from "@/lib/api/jobs";
+import {useUserInfo} from "@/lib/contexts/userInfoContext";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import {submitApplication} from "@/lib/actions/application"
 
 interface JobDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -93,16 +99,74 @@ function DetailedSection({ title, content, iconColor }: { title: string; content
   );
 }
 
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
-  const { slug } = await params;
-  const job: JobDoc | null = await getJobById(slug);
+export default function JobDetailPage({ params }: JobDetailPageProps) {
+  const userInfo = useUserInfo();
+  const [job, setJob] = useState<JobDoc | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isApplying, setIsApplying] = useState(false);
+
+
+  console.log("User Info:", userInfo?.user?.role); // Debugging line to check user info
+
+  const role = userInfo?.user?.role;
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      setIsLoading(true);
+      const { slug } = await params;
+      const result = await getJobById(slug);
+      setJob(result);
+      setIsLoading(false);
+    };
+
+    fetchJob();
+  }, [params]);
+
+    if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-sm text-gray-500">Loading job details...</p>
+      </div>
+    );
+  }
 
   if (!job) {
     notFound();
+    return null; // This line will never be reached, but it's here to satisfy TypeScript
   }
 
   const remainingDays = daysUntil(job.deadline);
   const isClosed = job.status !== "active" || (remainingDays !== null && remainingDays < 0);
+
+
+  const handleApplicationSubmit = async () => {
+    if (role !== "applicant") {
+      toast.error("Only applicants can apply for jobs.");
+      return;
+    }
+
+if (!userInfo?.user?.id || !userInfo?.user?.email) {
+    toast.error("You must be logged in to apply.");
+    return;
+  }
+
+  setIsApplying(true);
+  try {
+    const result = await submitApplication(
+      userInfo.user.id,
+      job._id,
+      userInfo.user.email
+    );
+
+    if (result.success) {
+      toast.success("Application submitted successfully!");
+    } else {
+      toast.error(result.message);
+    }
+  } finally {
+    setIsApplying(false);
+  }
+};
 
   return (
     <div className="min-h-screen rounded-2xl bg-gray-50/50 pb-16">
@@ -206,6 +270,7 @@ export default async function JobDetailPage({ params }: JobDetailPageProps) {
             {/* CTA Action Hook */}
             <button
               type="button"
+              onClick={handleApplicationSubmit}
               disabled={isClosed}
               className="mt-6 w-full py-4 px-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-150 bg-gray-950 text-white hover:bg-gray-900 active:scale-[0.99] shadow-md disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-950"
             >

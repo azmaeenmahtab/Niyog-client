@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getAllJobsByCompanyId } from "@/lib/api/jobs";
 import { getCompanyAction } from "@/lib/actions/company";
 import { useSession } from "@/lib/auth-client";
+import { usePathname, useRouter } from "next/navigation"; // Imported hooks
 
 interface Job {
   _id: string;
@@ -62,20 +63,25 @@ export function JobsTable() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const session = useSession()
-  console.log("Session in JobsTable:", session?.data?.user?.id); // Log the session for debugging
-  const recruiterId = session?.data?.user?.id ;
+  const session = useSession();
+  const recruiterId = session?.data?.user?.id;
+  
+  // Navigation hooks
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // Check if the current URL route matches applications
+  const isApplicationsRoute = pathname?.includes("recruiter/applications");
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const company = await getCompanyAction(recruiterId);
-        if(!company.ok || !company.company) {
+        if (!company.ok || !company.company) {
           setError(company.message || "Failed to fetch company details");
           return;
         }
         const companyId = company.company._id;
-        console.log("Company ID in JobsTable:", companyId); // Log the company ID for debugging
         const result = await getAllJobsByCompanyId(companyId, "active");
         if (!result?.success) {
           setError(result?.message || "Failed to fetch jobs");
@@ -89,8 +95,8 @@ export function JobsTable() {
       }
     };
 
-    fetchJobs();
-  }, []);
+    if (recruiterId) fetchJobs();
+  }, [recruiterId]);
 
   const sortedJobs = useMemo(() => {
     return [...jobs].sort((a, b) => {
@@ -194,15 +200,29 @@ export function JobsTable() {
                 </Table.Cell>
                 <Table.Cell>
                   <div className="flex items-center justify-end gap-1">
-                    <Button isIconOnly size="sm" variant="tertiary">
-                      <Icon className="size-4" icon="gravity-ui:eye" />
-                    </Button>
-                    <Button isIconOnly size="sm" variant="tertiary">
-                      <Icon className="size-4" icon="gravity-ui:pencil" />
-                    </Button>
-                    <Button isIconOnly size="sm" variant="danger-soft">
-                      <Icon className="size-4" icon="gravity-ui:trash-bin" />
-                    </Button>
+                    {isApplicationsRoute ? (
+                      // Conditional render: If path is recruiter/applications
+                      <Button 
+                        size="sm" 
+                        variant="secondary"
+                        onClick={() => router.push(`/dashboard/recruiter/applications/job/${job._id}`)}
+                      >
+                        See Applications
+                      </Button>
+                    ) : (
+                      // Fallback: If path is recruiter/jobs (Default actions)
+                      <>
+                        <Button isIconOnly size="sm" variant="tertiary">
+                          <Icon className="size-4" icon="gravity-ui:eye" />
+                        </Button>
+                        <Button isIconOnly size="sm" variant="tertiary">
+                          <Icon className="size-4" icon="gravity-ui:pencil" />
+                        </Button>
+                        <Button isIconOnly size="sm" variant="danger-soft">
+                          <Icon className="size-4" icon="gravity-ui:trash-bin" />
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </Table.Cell>
               </Table.Row>
