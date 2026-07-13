@@ -6,6 +6,14 @@ const nextConfig = {
     "@better-auth/kysely-adapter",
     "kysely",
   ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**", // matches any hostname
+      },
+    ],
+  },
 };
 
 export default nextConfig;

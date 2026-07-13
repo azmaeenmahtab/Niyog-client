@@ -8,7 +8,7 @@ export default function JobsLayout({ children }: { children: ReactNode }) {
     <section className="min-h-screen w-full bg-[#f3ede2] text-[#1a1a1a]">
       <Navbar />
       <div className="mx-auto w-full max-w-6xl px-4 pt-10 pb-20 sm:px-6 lg:px-8 lg:pt-10">
-        <header className="mb-10">
+        {/* <header className="mb-10">
           <h1 className="font-serif text-4xl font-medium tracking-tight sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
             Find Your Next{" "}
             <span className="font-serif italic font-medium text-[#e2613a]">
@@ -19,7 +19,7 @@ export default function JobsLayout({ children }: { children: ReactNode }) {
             Discover curated roles from sun-baked startups to global leaders.
             Your career journey, refined and simplified through the Niyog lens.
           </p>
-        </header>
+        </header> */}
         {children}
       </div>
       

@@ -48,3 +48,16 @@ export const getAllJobsByCompanyId = async (companyId: string, status?: string) 
         throw error;
     }
 }
+
+
+export async function getJobById(jobId: string) {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get-job/${jobId}`);
+    const result = await response.json();
+    if (!response.ok) return null;
+    return result.data;
+  } catch (error) {
+    console.error("getJobById error:", error);
+    return null;
+  }
+}

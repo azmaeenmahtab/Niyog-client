@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export interface JobItem {
   _id: string;
   title: string;
@@ -96,13 +98,13 @@ export default function JobsListing({ jobs }: { jobs: JobItem[] }) {
                   </p>
 
                   <div className="mt-4 flex justify-end">
-                    <button
-                      type="button"
-                      className="rounded-lg bg-[#e2613a] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_6px_14px_rgba(226,97,58,0.3)] transition hover:brightness-105"
-                    >
-                      Apply Now
-                    </button>
-                  </div>
+  <Link
+    href={`/jobs/details/${job._id}`}
+    className="rounded-lg bg-[#e2613a] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_6px_14px_rgba(226,97,58,0.3)] transition hover:brightness-105 cursor-pointer"
+  >
+    Apply Now
+  </Link>
+</div>
                 </div>
               </div>
             </li>
