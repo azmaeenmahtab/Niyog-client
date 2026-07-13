@@ -58,6 +58,7 @@ export default function JobsListing({ jobs }: { jobs: JobItem[] }) {
               <div className="flex items-start gap-5">
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#1a1a1a]/8 bg-[#1a1a1a]/4 text-[18px] font-bold text-[#1a1a1a]/60">
                   {job.companyLogoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={job.companyLogoUrl}
                       alt={`${job.company} logo`}
@@ -98,13 +99,13 @@ export default function JobsListing({ jobs }: { jobs: JobItem[] }) {
                   </p>
 
                   <div className="mt-4 flex justify-end">
-  <Link
-    href={`/jobs/details/${job._id}`}
-    className="rounded-lg bg-[#e2613a] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_6px_14px_rgba(226,97,58,0.3)] transition hover:brightness-105 cursor-pointer"
-  >
-    Apply Now
-  </Link>
-</div>
+                    <Link
+                      href={`/jobs/details/${job._id}`}
+                      className="rounded-lg bg-[#e2613a] px-5 py-2 text-[13px] font-semibold text-white shadow-[0_6px_14px_rgba(226,97,58,0.3)] transition hover:brightness-105 cursor-pointer"
+                    >
+                      Apply Now
+                    </Link>
+                  </div>
                 </div>
               </div>
             </li>

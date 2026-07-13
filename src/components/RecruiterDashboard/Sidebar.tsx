@@ -39,7 +39,7 @@ export function Sidebar() {
   const adminNavItems: NavItem[] = [
     { icon: House, label: "Home", href: "/dashboard/admin" },
     { icon: Persons, label: "Manage Users", href: "/dashboard/admin/manage/users" },
-    { icon: ListCheck, label: "Manage Jobs", href: "/dashboard/admin/mangage/jobs" },
+    { icon: ListCheck, label: "Manage Jobs", href: "/dashboard/admin/manage/jobs" },
     { icon: ListCheck, label: "Manage Company", href: "/dashboard/admin/manage/company" },
     { icon: ShieldCheck, label: "Approvals", href: "/dashboard/admin/approvals" },
     { icon: Bell, label: "Reports", href: "/dashboard/admin/reports" },

@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  basePath?: string;
 }
 
-export default function Pagination({ currentPage, totalPages }: PaginationProps) {
+export default function Pagination({ currentPage, totalPages, basePath = "/jobs" }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -15,7 +16,7 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
     if (page < 1 || page > totalPages || page === currentPage) return;
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", String(page));
-    router.push(`/jobs?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`);
   };
 
   if (totalPages <= 1) return null;
