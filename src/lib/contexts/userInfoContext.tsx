@@ -7,6 +7,7 @@ import {
 	type ReactNode,
 } from "react";
 import { useSession } from "@/lib/auth-client";
+import { Toast } from "@heroui/react";
 
 type SessionData = NonNullable<ReturnType<typeof useSession>["data"]>;
 type SessionUser = SessionData["user"] & {
@@ -38,6 +39,7 @@ export function UserInfoProvider({ children }: { children: ReactNode }) {
 
 	return (
 		<UserInfoContext.Provider value={value}>
+			<Toast.Provider />
 			{children}
 		</UserInfoContext.Provider>
 	);

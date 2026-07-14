@@ -4,7 +4,6 @@ dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import { Toast } from '@heroui/react';
 import { UserInfoProvider } from "@/lib/contexts/userInfoContext";
 
 const geistSans = Geist({
@@ -42,8 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geistSans.variable} ${geistMono.variable} ${serif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Toast.Provider />
-
         <UserInfoProvider>
           <main>
             {children}
