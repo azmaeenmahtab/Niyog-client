@@ -7,6 +7,10 @@ import { getAllJobsByCompanyId } from "@/lib/api/jobs";
 import { getCompanyAction } from "@/lib/actions/company";
 import { useSession } from "@/lib/auth-client";
 import { usePathname, useRouter } from "next/navigation"; // Imported hooks
+import { toast } from "sonner";
+import { EditJobModal } from "../Modals/EditJobModal";
+import { ConfirmModal } from "../Modals/ConfirmationModal";
+import { deleteJob } from "@/lib/actions/jobs";
 
 interface Job {
   _id: string;
@@ -62,10 +66,13 @@ export function JobsTable() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [editingJobId, setEditingJobId] = useState<string | null>(null);
+  const [deletingJobId, setDeletingJobId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const session = useSession();
   const recruiterId = session?.data?.user?.id;
-  
+
   // Navigation hooks
   const pathname = usePathname();
   const router = useRouter();
@@ -82,7 +89,7 @@ export function JobsTable() {
           return;
         }
         const companyId = company.company._id;
-        const result = await getAllJobsByCompanyId(companyId, "active");
+        const result = await getAllJobsByCompanyId(companyId);
         if (!result?.success) {
           setError(result?.message || "Failed to fetch jobs");
           return;
@@ -112,6 +119,35 @@ export function JobsTable() {
   if (loading) return <p className="text-sm text-muted p-4">Loading jobs...</p>;
   if (error) return <p className="text-sm text-danger p-4">{error}</p>;
   if (!jobs.length) return <p className="text-sm text-muted p-4">No jobs found.</p>;
+
+  const handleDeleteJob = async () => {
+    if (!deletingJobId) return;
+    setIsDeleting(true);
+    try {
+      const result = await deleteJob(deletingJobId);
+      if (result.success) {
+        toast.success("Job deleted successfully.");
+        setJobs((prev) => prev.filter((j) => j._id !== deletingJobId));
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsDeleting(false);
+      setDeletingJobId(null);
+    }
+  };
+
+  const refetchJobs = async () => {
+    // Re-run the same fetch used in your existing useEffect
+    try {
+      const company = await getCompanyAction(recruiterId);
+      if (!company.ok || !company.company) return;
+      const result = await getAllJobsByCompanyId(company.company._id);
+      if (result?.success) setJobs(result.data);
+    } catch {
+      // silent — the modal already showed a success toast; a failed refetch just means stale list until next load
+    }
+  };
 
   return (
     <Table>
@@ -202,8 +238,8 @@ export function JobsTable() {
                   <div className="flex items-center justify-end gap-1">
                     {isApplicationsRoute ? (
                       // Conditional render: If path is recruiter/applications
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="secondary"
                         onClick={() => router.push(`/dashboard/recruiter/applications/job/${job._id}`)}
                       >
@@ -212,13 +248,13 @@ export function JobsTable() {
                     ) : (
                       // Fallback: If path is recruiter/jobs (Default actions)
                       <>
-                        <Button isIconOnly size="sm" variant="tertiary">
+                        <Button isIconOnly size="sm" variant="tertiary" onClick={() => router.push(`/jobs/details/${job._id}`)}>
                           <Icon className="size-4" icon="gravity-ui:eye" />
                         </Button>
-                        <Button isIconOnly size="sm" variant="tertiary">
+                        <Button isIconOnly size="sm" variant="tertiary" onClick={() => setEditingJobId(job._id)}>
                           <Icon className="size-4" icon="gravity-ui:pencil" />
                         </Button>
-                        <Button isIconOnly size="sm" variant="danger-soft">
+                        <Button isIconOnly size="sm" variant="danger-soft" onClick={() => setDeletingJobId(job._id)}>
                           <Icon className="size-4" icon="gravity-ui:trash-bin" />
                         </Button>
                       </>
@@ -230,6 +266,27 @@ export function JobsTable() {
           </Table.Body>
         </Table.Content>
       </Table.ScrollContainer>
+      {editingJobId && (
+        <EditJobModal
+          jobId={editingJobId}
+          onClose={() => setEditingJobId(null)}
+          onUpdated={refetchJobs}
+        />
+      )}
+
+      {deletingJobId && (
+        <ConfirmModal
+          title="Delete this job?"
+          description="This will permanently remove the job listing. This cannot be undone."
+          confirmLabel="Delete"
+          variant="danger"
+          isLoading={isDeleting}
+          onCancel={() => setDeletingJobId(null)}
+          onConfirm={handleDeleteJob}
+        />
+      )}
     </Table>
+
+
   );
 }

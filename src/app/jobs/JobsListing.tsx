@@ -11,6 +11,7 @@ export interface JobItem {
   salary: string;
   description: string;
   tags?: string[];
+  status?: string;
 }
 
 const SORT_OPTIONS = ["Newest First", "Oldest First", "Salary: High to Low"];

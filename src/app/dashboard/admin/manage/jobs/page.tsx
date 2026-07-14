@@ -42,6 +42,7 @@ const mapToJobItem = (doc: any): JobItem => ({
   salary: formatSalary(doc),
   description: doc.description ?? doc.summary ?? "",
   tags: doc.tags ?? (doc.type ? [doc.type] : []),
+  status: doc.status ?? "inactive",
 });
 
 async function fetchJobs(params: getAllJobsQueryParams): Promise<JobsFetchResult> {
@@ -67,7 +68,7 @@ async function fetchJobs(params: getAllJobsQueryParams): Promise<JobsFetchResult
 
 export default async function ManageJobs({ searchParams }: ManageJobsPageProps) {
   const params = await searchParams;
-  const { jobs, pagination } = await fetchJobs({ page: params.page });
+  const { jobs, pagination } = await fetchJobs({ page: params.page, status: "all" });
 
   return (
     <div className="">

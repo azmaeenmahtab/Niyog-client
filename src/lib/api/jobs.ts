@@ -1,4 +1,6 @@
 export type getAllJobsQueryParams = {
+    /** Use "all" for admin views that must include active and inactive jobs. */
+    status?: "active" | "inactive" | "all";
     type?: string;
     search?: string;
     location?: string;

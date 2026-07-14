@@ -67,8 +67,13 @@ const AdminJobsTable = ({ jobs, pagination, basePath = "/dashboard/admin/manage/
                                             </Chip>
                                         </Table.Cell>
                                         <Table.Cell>
-                                            <Chip size="sm" variant="soft" color="success" className="capitalize">
-                                                Active
+                                            <Chip
+                                                size="sm"
+                                                variant="soft"
+                                                color={job.status?.toLowerCase() === "active" ? "success" : "danger"}
+                                                className="capitalize"
+                                            >
+                                                {job.status ?? "inactive"}
                                             </Chip>
                                         </Table.Cell>
                                         <Table.Cell>
