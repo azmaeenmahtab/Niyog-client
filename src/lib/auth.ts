@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { admin } from "better-auth/plugins";
 
 const mongoUri = process.env.MONGO_URI;
 if (!mongoUri) {
@@ -25,7 +26,7 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string, 
         }, 
   },
-  user: 
+    user: 
   {
        additionalFields: {
           role: {
@@ -35,5 +36,6 @@ export const auth = betterAuth({
               defaultValue: "applicant",
             } 
         }
-  }
+  },
+  plugins: [admin()],
 });
