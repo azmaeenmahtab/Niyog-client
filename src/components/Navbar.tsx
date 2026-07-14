@@ -29,6 +29,7 @@ export default function Navbar() {
   const userName = session?.user?.name;
   const userEmail = session?.user?.email;
   const userImage = session?.user?.image;
+  const userId = (session?.user as SessionUser | undefined)?.id;
 
   const dashboardHref =
     userRole === "applicant"
@@ -41,8 +42,9 @@ export default function Navbar() {
 
   const navItems = [
     { label: "Browse Jobs", href: "/jobs" },
-    { label: "Company", href: "#" },
-    { label: "Pricing", href: "#" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "About Us", href: "/about" },
+    { label: "Support", href: "/support" },
   ];
 
   const handlelogout = async () => {
@@ -80,7 +82,7 @@ export default function Navbar() {
     : null;
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-[#f3ede2] px-4 pt-5 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-40 w-full px-4 pt-5 sm:px-6 lg:px-8">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between rounded-full border border-black/5 bg-white/80 px-5 py-2.5 shadow-[0_8px_24px_rgba(40,24,8,0.06)] backdrop-blur-md sm:px-7">
         <div className="flex items-center gap-3">
           <button
@@ -213,7 +215,7 @@ export default function Navbar() {
                     </div>
                     <div className="my-1 border-t border-black/5" />
                     <Link
-                      href="/dashboard/profile"
+                      href={userId ? `/profile/${userId}` : "#"}
                       onClick={() => setIsAvatarMenuOpen(false)}
                       className="block px-4 py-2.5 text-[14px] text-[#1a1a1a]/80 transition hover:bg-black/5 hover:text-[#1a1a1a]"
                     >
@@ -285,7 +287,7 @@ export default function Navbar() {
               <>
                 <li>
                   <Link
-                    href="/dashboard/profile"
+                    href={userId ? `/profile/${userId}` : "#"}
                     onClick={() => setIsMenuOpen(false)}
                     className="block rounded-xl px-3 py-3 transition hover:bg-black/5 hover:text-[#1a1a1a]"
                   >

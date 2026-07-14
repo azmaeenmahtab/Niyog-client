@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -51,7 +53,11 @@ export interface ApplicantStats {
 
 export async function getApplicantStats(userId: string): Promise<ApiResponse<ApplicantStats>> {
   try {
-    const response = await fetch(`${API_BASE}/api/dashboard/applicant/${userId}`, { credentials: "include" });
+    const response = await fetch(`${API_BASE}/api/dashboard/applicant/${userId}`, { 
+        method: "GET",
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include" 
+    });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to fetch stats.");
     return result;
