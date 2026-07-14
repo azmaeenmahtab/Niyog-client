@@ -41,10 +41,10 @@ export function Sidebar() {
     { icon: Persons, label: "Manage Users", href: "/dashboard/admin/manage/users" },
     { icon: ListCheck, label: "Manage Jobs", href: "/dashboard/admin/manage/jobs" },
     { icon: ListCheck, label: "Manage Company", href: "/dashboard/admin/manage/company" },
-    { icon: ShieldCheck, label: "Approvals", href: "/dashboard/admin/approvals" },
-    { icon: Bell, label: "Reports", href: "/dashboard/admin/reports" },
+    // { icon: ShieldCheck, label: "Approvals", href: "/dashboard/admin/approvals" },
+    { icon: Bell, label: "Reports", href: "/dashboard/admin/manage/reports" },
     { icon: Person, label: "Profile", href: "/dashboard/profile" },
-    { icon: Gear, label: "Settings", href: "/dashboard/settings" },
+    // { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 
   const navItemsByRole: Record<string, NavItem[]> = {
