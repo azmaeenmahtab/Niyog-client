@@ -1,4 +1,5 @@
 "use server";
+import { getAuthedHeaders } from "../authHeader";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
 
@@ -26,7 +27,9 @@ export async function RegisterCompanyAction(
   try {
     const res = await fetch(`${API_BASE_URL}/api/register-company`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...await getAuthedHeaders()
+      },
       body: JSON.stringify(payload),
       cache: "no-store",
     });
@@ -83,6 +86,7 @@ export async function getCompanyAction(recruiterId: string): Promise<GetCompanyR
     console.log("[getCompanyAction] fetching", url);
     const res = await fetch(url, {
       method: "GET",
+      headers: await getAuthedHeaders() as HeadersInit,
     });
 
     const data = (await res.json().catch(() => ({}))) as {

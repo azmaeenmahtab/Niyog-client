@@ -17,7 +17,11 @@ export interface RecruiterStats {
 
 export async function getRecruiterStats(recruiterId: string): Promise<ApiResponse<RecruiterStats>> {
   try {
-    const response = await fetch(`${API_BASE}/api/dashboard/recruiter/${recruiterId}`, { credentials: "include" });
+    const response = await fetch(`${API_BASE}/api/dashboard/recruiter/${recruiterId}`, 
+        { 
+            method: "GET",
+            headers: await getAuthedHeaders() as HeadersInit,
+            credentials: "include" });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to fetch stats.");
     return result;
@@ -35,7 +39,12 @@ export interface AdminStats {
 
 export async function getAdminStats(): Promise<ApiResponse<AdminStats>> {
   try {
-    const response = await fetch(`${API_BASE}/api/dashboard/admin`, { credentials: "include" });
+    const response = await fetch(`${API_BASE}/api/dashboard/admin`, 
+    { 
+        method: "GET",
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include" 
+    });
     const result = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to fetch stats.");
     return result;

@@ -1,4 +1,5 @@
 'use client';
+
 import { Bars, Bell, Envelope, Gear, House, Person, Plus, Persons, ShieldCheck, ListCheck } from "@gravity-ui/icons";
 import { Button, Drawer } from "@heroui/react";
 import Link from "next/link";
@@ -14,6 +15,10 @@ interface NavItem {
 export function Sidebar() {
   const { user } = useUserInfo();
   const role = (user as { role?: string } | null)?.role;
+  const userId = (user as { id?: string } | null)?.id;
+
+  // Compute the profile path dynamically or fall back to home if user ID isn't available yet
+  const profileHref = userId ? `/profile/${userId}` : "#";
 
   const applicantNavItems: NavItem[] = [
     { icon: House, label: "Home", href: "/dashboard/applicant" },
@@ -22,7 +27,7 @@ export function Sidebar() {
     { icon: Envelope, label: "Saved Jobs", href: "/dashboard/applicant/jobs/saved" },
     // { icon: Person, label: "Manage Resume/CV", href: "/dashboard/applicant/resume" },
     // { icon: Gear, label: "Interviews", href: "/dashboard/applicant/interviews" },
-    { icon: Person, label: "Profile", href: "/dashboard/profile" },
+    { icon: Person, label: "Profile", href: profileHref },
     // { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 
@@ -32,7 +37,7 @@ export function Sidebar() {
     { icon: Bell, label: "Manage Jobs", href: "/dashboard/recruiter/jobs" },
     { icon: Bell, label: "Manage Applications", href: "/dashboard/recruiter/applications" },
     { icon: Envelope, label: "Company Profile", href: "/dashboard/recruiter/company-profile" },
-    { icon: Person, label: "Profile", href: "/dashboard/profile" },
+    { icon: Person, label: "Profile", href: profileHref },
     { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 
@@ -43,7 +48,7 @@ export function Sidebar() {
     { icon: ListCheck, label: "Manage Company", href: "/dashboard/admin/manage/company" },
     // { icon: ShieldCheck, label: "Approvals", href: "/dashboard/admin/approvals" },
     { icon: Bell, label: "Reports", href: "/dashboard/admin/manage/reports" },
-    { icon: Person, label: "Profile", href: "/dashboard/profile" },
+    { icon: Person, label: "Profile", href: profileHref },
     // { icon: Gear, label: "Settings", href: "/dashboard/settings" },
   ];
 

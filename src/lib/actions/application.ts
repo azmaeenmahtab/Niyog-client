@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export interface SubmitApplicationResponse {
   success: boolean;
   message: string;
@@ -14,7 +16,9 @@ export async function submitApplication(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/applications/${userId}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...await getAuthedHeaders()
+        },
         credentials: "include",
         body: JSON.stringify({ jobId, email }),
       }

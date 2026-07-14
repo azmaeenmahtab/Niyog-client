@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export interface Application {
   _id: string;
   jobId: string;
@@ -31,6 +33,7 @@ export async function getApplicationsByUserId(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/applications/user/${userId}`,
       {
         method: "GET",
+        headers: await getAuthedHeaders() as HeadersInit,
         credentials: "include",
       }
     );
@@ -62,6 +65,7 @@ export async function getApplicationsByJobId(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/applications/job/${jobId}`,
       {
         method: "GET",
+        headers: await getAuthedHeaders() as HeadersInit,
         credentials: "include", // maintains cookie session consistency
       }
     );
@@ -94,9 +98,7 @@ export async function updateApplicationStatusAction(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/applications/${applicationId}/status`,
       {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: await getAuthedHeaders() as HeadersInit,
         body: JSON.stringify({ status }),
         credentials: "include",
       }

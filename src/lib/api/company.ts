@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export interface Company {
   _id: string;
   name: string;
@@ -25,6 +27,7 @@ export async function getAllCompanies(): Promise<ApiResponse<Company[]>> {
   try {
     const response = await fetch(`${API_BASE}/api/admin/company/all`, {
       method: "GET",
+      headers: await getAuthedHeaders() as HeadersInit,
       credentials: "include",
     });
     const result: ApiResponse<Company[]> = await response.json();
@@ -45,7 +48,7 @@ export async function updateCompanyStatus(
   try {
     const response = await fetch(`${API_BASE}/api/admin/company/update/status/${companyId}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: await getAuthedHeaders() as HeadersInit,
       credentials: "include",
       body: JSON.stringify({ status }),
     });
@@ -64,6 +67,7 @@ export async function deleteCompany(companyId: string): Promise<ApiResponse<null
   try {
     const response = await fetch(`${API_BASE}/api/admin/company/delete/${companyId}`, {
       method: "DELETE",
+      headers: await getAuthedHeaders() as HeadersInit,
       credentials: "include",
     });
     const result: ApiResponse<null> = await response.json();

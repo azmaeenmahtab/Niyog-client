@@ -1,5 +1,7 @@
 
 
+import { getAuthedHeaders } from "../authHeader";
+
 // for client components — fetches from the backend API to avoid pulling
 // server-only modules (next/headers, MongoClient) into the client bundle.
 export const getRecruiterCompanyDataById = async (recruiterId: string) => {
@@ -8,7 +10,11 @@ export const getRecruiterCompanyDataById = async (recruiterId: string) => {
 
   const res = await fetch(
     `${baseUrl}/api/recruiter-company?recruiterId=${encodeURIComponent(recruiterId)}`,
-    { cache: "no-store" }
+    {
+      method: "GET",
+      headers: await getAuthedHeaders() as HeadersInit,
+      cache: "no-store"
+    }
   );
 
   if (!res.ok) return null;

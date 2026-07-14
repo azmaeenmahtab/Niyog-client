@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export type getAllJobsQueryParams = {
     /** Use "all" for admin views that must include active and inactive jobs. */
     status?: "active" | "inactive" | "all";
@@ -42,7 +44,10 @@ export const getAllJobsByCompanyId = async (companyId: string, status?: string) 
     try {
         const qs = buildQueryString({ companyId, status });
         const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/get-jobs-by-company-id${qs ? `?${qs}` : ""}`;
-        const result = await fetch(url);
+        const result = await fetch(url, {
+            headers: await getAuthedHeaders() as HeadersInit,
+            credentials: "include"
+        });
         const data = await result.json();
         return data;
     } catch (error) {
@@ -54,7 +59,10 @@ export const getAllJobsByCompanyId = async (companyId: string, status?: string) 
 
 export async function getJobById(jobId: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get-job/${jobId}`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/get-job/${jobId}`, {
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+    });
     const result = await response.json();
     if (!response.ok) return null;
     return result.data;
@@ -75,7 +83,10 @@ export async function checkJobSaved(userId: string, jobId: string): Promise<Chec
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/save-job/check/${userId}/${jobId}`,
-      { credentials: "include" }
+      {
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+      }
     );
     const result: CheckSavedResponse = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to check saved status.");
@@ -96,7 +107,10 @@ export async function checkJobReported(userId: string, jobId: string): Promise<C
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/report-job/check/${userId}/${jobId}`,
-      { credentials: "include" }
+      {
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+      }
     );
     const result: CheckReportedResponse = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to check reported status.");
@@ -129,7 +143,10 @@ export async function getSavedJobs(userId: string): Promise<GetSavedJobsResponse
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/saved-jobs/${userId}`,
-      { credentials: "include" }
+      {
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+      }
     );
     const result: GetSavedJobsResponse = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to fetch saved jobs.");

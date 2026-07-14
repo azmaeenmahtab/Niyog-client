@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export interface JobReport {
   _id: string;
   userId: string;
@@ -23,6 +25,7 @@ export async function getAllReports(status?: string): Promise<ApiResponse<JobRep
     const query = status && status !== "all" ? `?status=${status}` : "";
     const response = await fetch(`${API_BASE}/api/admin/reports${query}`, {
       method: "GET",
+      headers: await getAuthedHeaders() as HeadersInit,
       credentials: "include",
     });
     const result: ApiResponse<JobReport[]> = await response.json();
@@ -40,6 +43,7 @@ export async function dismissReport(reportId: string): Promise<ApiResponse<JobRe
   try {
     const response = await fetch(`${API_BASE}/api/admin/reports/${reportId}/dismiss`, {
       method: "PATCH",
+      headers: await getAuthedHeaders() as HeadersInit,
       credentials: "include",
     });
     const result: ApiResponse<JobReport> = await response.json();
@@ -60,7 +64,9 @@ export async function deactivateReportedJob(
   try {
     const response = await fetch(`${API_BASE}/api/admin/reports/${reportId}/deactivate-job`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...await getAuthedHeaders()
+      },
       credentials: "include",
       body: JSON.stringify({ jobId }),
     });
@@ -82,7 +88,9 @@ export async function deleteReportedJob(
   try {
     const response = await fetch(`${API_BASE}/api/admin/reports/${reportId}/job`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...await getAuthedHeaders()
+      },
       credentials: "include",
       body: JSON.stringify({ jobId }),
     });

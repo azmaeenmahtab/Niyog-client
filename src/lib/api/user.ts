@@ -1,4 +1,5 @@
 // src/utils/api.ts
+import { getAuthedHeaders } from "../authHeader";
 
 export interface UpdateRoleResponse {
   success: boolean;
@@ -19,10 +20,12 @@ export async function updateUserRole(
     // If your backend is hosted on a different port/url during development,
     // append it here, e.g., `http://localhost:5000/api/users/${userId}/role`
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/user/update-role?userId=${userId}`, {
-  method: "PATCH",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ role }),
-});
+      method: "PATCH",
+      headers: {
+        ...await getAuthedHeaders()
+      },
+      body: JSON.stringify({ role }),
+    });
 
     const result: UpdateRoleResponse = await response.json();
 

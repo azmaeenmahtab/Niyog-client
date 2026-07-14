@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { getAuthedHeaders } from "@/lib/authHeader";
 
 const INITIAL = {
   title: "",
@@ -110,7 +111,9 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/post-job`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...await getAuthedHeaders()
+      },
       body: JSON.stringify(payload),
     });
 

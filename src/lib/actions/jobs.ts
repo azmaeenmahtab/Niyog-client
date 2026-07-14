@@ -1,3 +1,5 @@
+import { getAuthedHeaders } from "../authHeader";
+
 export interface SaveJobResponse {
   success: boolean;
   message: string;
@@ -10,7 +12,9 @@ export async function saveJob(userId: string, jobId: string): Promise<SaveJobRes
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/save-job/${userId}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...await getAuthedHeaders()
+        },
         credentials: "include",
         body: JSON.stringify({ jobId }),
       }
@@ -28,7 +32,11 @@ export async function unsaveJob(userId: string, jobId: string): Promise<SaveJobR
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/save-job/${userId}/${jobId}`,
-      { method: "DELETE", credentials: "include" }
+      {
+        method: "DELETE",
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+      }
     );
     const result: SaveJobResponse = await response.json();
     if (!response.ok) throw new Error(result.message || "Failed to unsave job.");
@@ -56,7 +64,9 @@ export async function reportJob(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/report-job/${userId}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...await getAuthedHeaders()
+        },
         credentials: "include",
         body: JSON.stringify({ jobId, reason, details }),
       }
@@ -104,7 +114,9 @@ export async function updateJob(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/update-job/${jobId}`,
       {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...await getAuthedHeaders()
+        },
         credentials: "include",
         body: JSON.stringify(payload),
       }
@@ -130,7 +142,11 @@ export async function deleteJob(jobId: string): Promise<DeleteJobResponse> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/delete-job/${jobId}`,
-      { method: "DELETE", credentials: "include" }
+      {
+        method: "DELETE",
+        headers: await getAuthedHeaders() as HeadersInit,
+        credentials: "include"
+      }
     );
     const result: DeleteJobResponse = await response.json();
     if (!response.ok) {
