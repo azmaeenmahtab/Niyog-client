@@ -1,48 +1,33 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
-import StatCard from "./StatCard";
-import {
-  faFileLines,
-  faUsers,
-  faBolt,
-  faCircleCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { useSession } from "@/lib/auth-client";
+import { getRecruiterStats, type RecruiterStats } from "@/lib/api/dashboard";
+import { StatCard } from "@/components/shared/StatCard";
 
-const stats = [
-  { icon: faFileLines, label: "Total Job Posts", value: 48 },
-  { icon: faUsers, label: "Total Applicants", value: 1284 },
-  { icon: faBolt, label: "Active Jobs", value: 18 },
-  { icon: faCircleCheck, label: "Jobs Closed", value: 32 },
-];
-
-export default function RecruiterDashboardStats() {
-  const { data: session } = useSession();
-  const [mounted, setMounted] = useState(false);
+export default function RecruiterHomePage() {
+  const session = useSession();
+  const recruiterId = session?.data?.user?.id;
+  const [stats, setStats] = useState<RecruiterStats | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
-
-  const userName = mounted ? (session?.user?.name || "there") : "there";
+    if (!recruiterId) return;
+    getRecruiterStats(recruiterId).then((result) => {
+      if (result.success) setStats(result.data ?? null);
+    });
+  }, [recruiterId]);
 
   return (
-    <section className="w-full">
-      <h1 className="mb-5 text-[22px] font-semibold text-white">
-        Welcome back, {userName}
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-white">
+        Welcome back, {session?.data?.user?.name || "Recruiter"}
       </h1>
-      <div className="flex gap-4">
-        {stats.map((stat) => (
-          <StatCard
-            key={stat.label}
-            icon={stat.icon}
-            label={stat.label}
-            value={stat.value}
-          />
-        ))}
+      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard icon="gravity-ui:file-text" label="Total Job Posts" value={stats?.totalJobPosts ?? "—"} />
+        <StatCard icon="gravity-ui:persons" label="Total Applicants" value={stats?.totalApplicants ?? "—"} />
+        <StatCard icon="gravity-ui:bolt" label="Active Jobs" value={stats?.activeJobs ?? "—"} />
+        <StatCard icon="gravity-ui:circle-check" label="Jobs Closed" value={stats?.jobsClosed ?? "—"} />
       </div>
-    </section>
+    </div>
   );
 }

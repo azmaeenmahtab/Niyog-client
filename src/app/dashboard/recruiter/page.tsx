@@ -1,9 +1,9 @@
-import RecruiterDashboardStats from "@/components/RecruiterDashboard/StatSection";
-
+import RecruiterHomePage from "@/components/RecruiterDashboard/StatSection";
+ 
 export default function RecruiterPage() {
   return (
     <div>
-      <RecruiterDashboardStats />
+      <RecruiterHomePage />
     </div>
   );
 }
