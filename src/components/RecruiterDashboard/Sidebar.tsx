@@ -19,7 +19,7 @@ export function Sidebar() {
     { icon: House, label: "Home", href: "/dashboard/applicant" },
     { icon: Plus, label: "Search Jobs", href: "/jobs" },
     { icon: Bell, label: "My Applications", href: "/dashboard/applicant/applications" },
-    { icon: Envelope, label: "Saved Jobs", href: "/dashboard/applicant/saved" },
+    { icon: Envelope, label: "Saved Jobs", href: "/dashboard/applicant/jobs/saved" },
     // { icon: Person, label: "Manage Resume/CV", href: "/dashboard/applicant/resume" },
     // { icon: Gear, label: "Interviews", href: "/dashboard/applicant/interviews" },
     { icon: Person, label: "Profile", href: "/dashboard/profile" },

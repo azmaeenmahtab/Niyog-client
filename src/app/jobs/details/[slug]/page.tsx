@@ -3,11 +3,13 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { getJobById } from "@/lib/api/jobs";
-import {useUserInfo} from "@/lib/contexts/userInfoContext";
+import { checkJobReported, checkJobSaved, getJobById } from "@/lib/api/jobs";
+import { useUserInfo } from "@/lib/contexts/userInfoContext";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import {submitApplication} from "@/lib/actions/application"
+import { submitApplication } from "@/lib/actions/application"
+import { reportJob, saveJob, unsaveJob } from "@/lib/actions/jobs";
+import { ReportJobModal } from "@/components/Modals/ReportJobModal";
 
 interface JobDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -79,12 +81,12 @@ function DetailedSection({ title, content, iconColor }: { title: string; content
         <span className={`w-1.5 h-6 rounded-full ${iconColor}`} />
         <h2 className="text-xl font-bold text-gray-900 tracking-tight">{title}</h2>
       </div>
-      
+
       <ul className="space-y-4">
         {rawLines.map((line, idx) => {
           // Clean standard bullets if they already exist in the database string
           const cleanText = line.replace(/^[-*•\d+.]\s*/, "");
-          
+
           return (
             <li key={idx} className="flex items-start gap-3 text-[15px] leading-relaxed text-gray-600">
               <svg className={`w-5 h-5 mt-0.5 shrink-0 text-gray-400`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -104,7 +106,11 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
   const [job, setJob] = useState<JobDoc | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
-
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isReporting, setIsReporting] = useState(false);
+  const [isReported, setIsReported] = useState(false);
 
   console.log("User Info:", userInfo?.user?.role); // Debugging line to check user info
 
@@ -117,12 +123,21 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
       const result = await getJobById(slug);
       setJob(result);
       setIsLoading(false);
+
+      if (result && userInfo?.user?.id) {
+        const [savedResult, reportedResult] = await Promise.all([
+          checkJobSaved(userInfo.user.id, result._id),
+          checkJobReported(userInfo.user.id, result._id),
+        ]);
+        if (savedResult.success) setIsSaved(savedResult.data?.isSaved ?? false);
+        if (reportedResult.success) setIsReported(reportedResult.data?.isReported ?? false);
+      }
     };
 
     fetchJob();
-  }, [params]);
+  }, [params, userInfo?.user?.id]);
 
-    if (isLoading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-sm text-gray-500">Loading job details...</p>
@@ -145,28 +160,76 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
       return;
     }
 
-if (!userInfo?.user?.id || !userInfo?.user?.email) {
-    toast.error("You must be logged in to apply.");
-    return;
-  }
-
-  setIsApplying(true);
-  try {
-    const result = await submitApplication(
-      userInfo.user.id,
-      job._id,
-      userInfo.user.email
-    );
-
-    if (result.success) {
-      toast.success("Application submitted successfully!");
-    } else {
-      toast.error(result.message);
+    if (!userInfo?.user?.id || !userInfo?.user?.email) {
+      toast.error("You must be logged in to apply.");
+      return;
     }
-  } finally {
-    setIsApplying(false);
-  }
-};
+
+    setIsApplying(true);
+    try {
+      const result = await submitApplication(
+        userInfo.user.id,
+        job._id,
+        userInfo.user.email
+      );
+
+      if (result.success) {
+        toast.success("Application submitted successfully!");
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsApplying(false);
+    }
+  };
+
+  const handleSaveToggle = async () => {
+    if (!userInfo?.user?.id) {
+      toast.error("You must be logged in to save jobs.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      if (isSaved) {
+        const result = await unsaveJob(userInfo.user.id, job._id);
+        if (result.success) {
+          setIsSaved(false);
+          toast.success("Job removed from saved list.");
+        } else {
+          toast.error(result.message);
+        }
+      } else {
+        const result = await saveJob(userInfo.user.id, job._id);
+        if (result.success) {
+          setIsSaved(true);
+          toast.success("Job saved!");
+        } else {
+          toast.error(result.message);
+        }
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleReportSubmit = async (reason: string, details: string) => {
+    if (!userInfo?.user?.id) {
+      toast.error("You must be logged in to report a job.");
+      return;
+    }
+    setIsReporting(true);
+    try {
+      const result = await reportJob(userInfo.user.id, job._id, reason, details);
+      if (result.success) {
+        toast.success("Report submitted. Thanks for letting us know.");
+        setIsReportModalOpen(false);
+      } else {
+        toast.error(result.message);
+      }
+    } finally {
+      setIsReporting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen rounded-2xl bg-gray-50/50 pb-16">
@@ -180,14 +243,14 @@ if (!userInfo?.user?.id || !userInfo?.user?.email) {
 
       {/* Main Container */}
       <div className="max-w-6xl mx-auto px-4 mt-4 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
+
         {/* LEFT COLUMN - Main Job Content */}
         <div className="lg:col-span-2 space-y-6">
-          
+
           {/* Main Card Header */}
           <div className="bg-white rounded-2xl border border-gray-200/80 p-6 md:p-8 shadow-sm">
             <div className="flex flex-col sm:flex-row items-start justify-between gap-6">
-              
+
               <div className="flex items-start gap-5">
                 {/* Logo wrapper */}
                 <div className="w-16 h-16 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0 overflow-hidden text-2xl font-black text-gray-400">
@@ -205,7 +268,7 @@ if (!userInfo?.user?.id || !userInfo?.user?.email) {
                   <p className="text-gray-600 font-medium mt-1">
                     {job.companyName} <span className="text-gray-300 mx-2">|</span> <span className="text-gray-500 font-normal">{formatLocation(job)}</span>
                   </p>
-                  
+
                   {/* Badges row */}
                   <div className="flex flex-wrap gap-2 mt-4">
                     <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wider rounded-md bg-blue-50 text-blue-700 border border-blue-100">
@@ -235,11 +298,44 @@ if (!userInfo?.user?.id || !userInfo?.user?.email) {
             <DetailedSection title="Requirements & Experience" content={job.requirements} iconColor="bg-purple-600" />
             <DetailedSection title="Compensations & Benefits" content={job.benefits} iconColor="bg-emerald-600" />
           </div>
+
+          <div className="flex items-center gap-2 mt-4">
+            <button
+              type="button"
+              onClick={handleSaveToggle}
+              disabled={isSaving}
+              className={`flex-1 rounded-xl border py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${isSaved
+                ? "border-gray-950 bg-gray-950 text-white hover:bg-gray-900"
+                : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                }`}
+            >
+              {isSaving ? "..." : isSaved ? "Saved" : "Save Job"}
+            </button>
+            <button
+              type="button"
+              onClick={() => !isReported && setIsReportModalOpen(true)}
+              disabled={isReported}
+              className={`rounded-xl border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed ${isReported
+                  ? "border-red-200 bg-red-50 text-red-400"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-red-50 hover:text-red-600"
+                }`}
+            >
+              {isReported ? "Reported" : "Report"}
+            </button>
+          </div>
+
+          {isReportModalOpen && (
+            <ReportJobModal
+              onClose={() => setIsReportModalOpen(false)}
+              onSubmit={handleReportSubmit}
+              isSubmitting={isReporting}
+            />
+          )}
         </div>
 
         {/* RIGHT COLUMN - Sticky Sidebar Metadata & Action */}
         <div className="space-y-6 lg:sticky lg:top-25">
-          
+
           {/* Compensation Card */}
           <div className="bg-white rounded-2xl border border-gray-200/80 p-6 shadow-sm">
             <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Estimated Compensation</h3>

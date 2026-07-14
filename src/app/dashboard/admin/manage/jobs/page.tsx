@@ -70,7 +70,7 @@ export default async function ManageJobs({ searchParams }: ManageJobsPageProps) 
   const { jobs, pagination } = await fetchJobs({ page: params.page });
 
   return (
-    <div className="px-6 py-6">
+    <div className="">
       <AdminJobsTable jobs={jobs} pagination={pagination} basePath="/dashboard/admin/manage/jobs" />
     </div>
   );

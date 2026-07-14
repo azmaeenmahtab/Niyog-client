@@ -61,3 +61,79 @@ export async function getJobById(jobId: string) {
     return null;
   }
 }
+
+
+export interface CheckSavedResponse {
+  success: boolean;
+  message: string;
+  data?: { isSaved: boolean };
+}
+
+export async function checkJobSaved(userId: string, jobId: string): Promise<CheckSavedResponse> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/save-job/check/${userId}/${jobId}`,
+      { credentials: "include" }
+    );
+    const result: CheckSavedResponse = await response.json();
+    if (!response.ok) throw new Error(result.message || "Failed to check saved status.");
+    return result;
+  } catch (error: any) {
+    console.error("checkJobSaved error:", error);
+    return { success: false, message: error.message || "Network error." };
+  }
+}
+
+export interface CheckReportedResponse {
+  success: boolean;
+  message: string;
+  data?: { isReported: boolean };
+}
+
+export async function checkJobReported(userId: string, jobId: string): Promise<CheckReportedResponse> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/report-job/check/${userId}/${jobId}`,
+      { credentials: "include" }
+    );
+    const result: CheckReportedResponse = await response.json();
+    if (!response.ok) throw new Error(result.message || "Failed to check reported status.");
+    return result;
+  } catch (error: any) {
+    console.error("checkJobReported error:", error);
+    return { success: false, message: error.message || "Network error." };
+  }
+}
+
+
+
+export interface SavedJob {
+  _id: string;
+  userId: string;
+  jobId: string;
+  jobTitle: string;
+  companyName: string;
+  companyLogoUrl?: string | null;
+  savedAt: string;
+}
+
+export interface GetSavedJobsResponse {
+  success: boolean;
+  message: string;
+  data?: SavedJob[];
+}
+
+export async function getSavedJobs(userId: string): Promise<GetSavedJobsResponse> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/saved-jobs/${userId}`,
+      { credentials: "include" }
+    );
+    const result: GetSavedJobsResponse = await response.json();
+    if (!response.ok) throw new Error(result.message || "Failed to fetch saved jobs.");
+    return result;
+  } catch (error: any) {
+    console.error("getSavedJobs error:", error);
+    return { success: false, message: error.message || "Network error." };
+  }
+}

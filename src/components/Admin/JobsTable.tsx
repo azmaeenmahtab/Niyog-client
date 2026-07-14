@@ -29,8 +29,8 @@ const AdminJobsTable = ({ jobs, pagination, basePath = "/dashboard/admin/manage/
         <div className="space-y-6">
             <div className="flex items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-semibold tracking-tight text-[#1a1a1a]">Manage Jobs</h1>
-                    <p className="mt-1 text-sm text-[#1a1a1a]/60">
+                    <h1 className="text-2xl font-semibold tracking-tight text-white">Manage Jobs</h1>
+                    <p className="mt-1 text-sm text-white/60">
                         {pagination.totalCount} total jobs across {pagination.totalPages} pages.
                     </p>
                 </div>
