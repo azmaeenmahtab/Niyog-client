@@ -23,11 +23,13 @@ const serif = Cormorant_Garamond({
 });
 
 export const metadata = {
-  title: "Niyog",
-  description: "Niyog - Your gateway to new opportunities",
-  icons:{
-    icon:"./blacklogo.png"
-  }
+  title: "Niyog - Your gateway to new opportunities",
+  description: "HireLoop & Niyog connects top talent with world-class companies. Browse thousands of curated opportunities.",
+  icons: {
+    icon: "/blacklogo.png",
+    shortcut: "/blacklogo.png",
+    apple: "/blacklogo.png",
+  },
 };
 
 export const viewport = {

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Oswald } from "next/font/google";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import whitelogo from "@/assets/whitelogo.png";
+import blacklogo from "@/assets/blacklogo.png";
 import { signIn } from "@/lib/auth-client";
 
 const oswald = Oswald({
@@ -51,7 +51,7 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   if (!message) return null;
 
   return (
-    <p id={id} className="mt-2 text-sm font-medium text-[#ff7b8d]">
+    <p id={id} className="mt-1.5 text-xs font-medium text-[#c42e20]">
       {message}
     </p>
   );
@@ -126,7 +126,7 @@ export default function LoginIndex() {
         provider: "google",
         callbackURL: "/",
         additionalData: {
-            role: 'applicant',
+          role: "applicant",
         },
       });
 
@@ -137,9 +137,10 @@ export default function LoginIndex() {
         );
       }
     } catch (error) {
-      const message = error instanceof Error
-        ? error.message
-        : "Google sign in is not configured yet. Please add the Google OAuth provider.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Google sign in is not configured yet. Please add the Google OAuth provider.";
       setFormError(message);
     } finally {
       setIsGoogleLoading(false);
@@ -147,54 +148,54 @@ export default function LoginIndex() {
   };
 
   return (
-    <section className="min-h-screen bg-[#050505] px-4 py-10 text-white sm:px-6 lg:px-8">
+    <section className="min-h-screen bg-[#f3ede2] px-4 py-10 text-[#1a1a1a] sm:px-6 lg:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 lg:min-h-[calc(100vh-5rem)] lg:flex-row lg:items-center lg:justify-between">
         <div className="max-w-lg">
-          <Link href="/" className="inline-flex items-center gap-3">
-            <Image src={whitelogo} alt="Niyog" className="h-10 w-auto" priority />
+          <Link href="/" className="inline-flex items-center gap-3 group">
+            <Image src={blacklogo} alt="Niyog" className="h-10 w-auto transition-transform group-hover:scale-105" priority />
             <span
-              className={`${oswald.className} text-[32px] font-semibold italic text-white -skew-x-12`}
+              className={`${oswald.className} text-[32px] font-semibold italic text-[#e2613a] -skew-x-12`}
             >
               Niyog
             </span>
           </Link>
 
           <div className="mt-12">
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-[#7c72ff]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/60 px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#e2613a] shadow-[0_4px_16px_rgba(40,24,8,0.04)] backdrop-blur-md">
               Welcome back
-            </p>
-            <h1 className="mt-4 text-4xl font-semibold leading-tight text-white sm:text-5xl">
+            </span>
+            <h1 className="mt-4 font-serif text-4xl font-medium tracking-tight text-[#1a1a1a] sm:text-5xl lg:leading-[1.1]">
               Sign in to continue your career journey.
             </h1>
-            <p className="mt-5 max-w-md text-base leading-7 text-white/55">
+            <p className="mt-5 max-w-md text-base leading-7 text-[#1a1a1a]/65">
               Use your email and password to access your profile, or continue
               with Google once OAuth is configured.
             </p>
           </div>
         </div>
 
-        <div className="w-full max-w-md rounded-lg border border-white/10 bg-[#111111] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.36)] sm:p-8">
+        <div className="w-full max-w-md rounded-2xl border border-white/60 bg-[#faf6ec] p-6 shadow-[0_18px_45px_rgba(40,24,8,0.07)] ring-1 ring-[#1a1a1a]/5 backdrop-blur-md sm:p-8">
           <button
             type="button"
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading || isSubmitting}
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-md border border-white/12 bg-white px-4 text-sm font-semibold text-[#181818] transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-70"
+            className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-[#1a1a1a]/12 bg-white px-4 text-sm font-semibold text-[#1a1a1a] shadow-[0_2px_8px_rgba(40,24,8,0.04)] transition hover:bg-white/95 hover:border-[#1a1a1a]/25 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
           >
-            <FontAwesomeIcon icon={faGoogle} className="h-4 w-4" />
+            <FontAwesomeIcon icon={faGoogle} className="h-4 w-4 text-[#ea4335]" />
             {isGoogleLoading ? "Connecting..." : "Continue with Google"}
           </button>
 
           <div className="my-6 flex items-center gap-4">
-            <span className="h-px flex-1 bg-white/10" />
-            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/35">
+            <span className="h-px flex-1 bg-[#1a1a1a]/10" />
+            <span className="text-xs font-semibold uppercase tracking-[0.18em] text-[#1a1a1a]/40">
               or
             </span>
-            <span className="h-px flex-1 bg-white/10" />
+            <span className="h-px flex-1 bg-[#1a1a1a]/10" />
           </div>
 
-          <form className="space-y-5" noValidate onSubmit={handleEmailLogin}>
+          <form className="space-y-4" noValidate onSubmit={handleEmailLogin}>
             <div>
-              <label htmlFor="email" className="text-sm font-medium text-white/78">
+              <label htmlFor="email" className="text-sm font-medium text-[#1a1a1a]/80">
                 Email
               </label>
               <input
@@ -207,14 +208,14 @@ export default function LoginIndex() {
                 aria-invalid={Boolean(visibleErrors.email)}
                 aria-describedby={visibleErrors.email ? "email-error" : undefined}
                 autoComplete="email"
-                className="mt-2 h-12 w-full rounded-md border border-white/12 bg-[#0a0a0a] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#7c72ff] focus:ring-3 focus:ring-[#7c72ff]/18"
+                className="mt-1.5 h-12 w-full rounded-xl border border-[#1a1a1a]/12 bg-white/80 px-4 text-sm text-[#1a1a1a] outline-none transition placeholder:text-[#1a1a1a]/35 focus:border-[#e2613a] focus:bg-white focus:ring-3 focus:ring-[#e2613a]/15"
                 placeholder="you@example.com"
               />
               <FieldError id="email-error" message={visibleErrors.email} />
             </div>
 
             <div>
-              <label htmlFor="password" className="text-sm font-medium text-white/78">
+              <label htmlFor="password" className="text-sm font-medium text-[#1a1a1a]/80">
                 Password
               </label>
               <input
@@ -227,14 +228,14 @@ export default function LoginIndex() {
                 aria-invalid={Boolean(visibleErrors.password)}
                 aria-describedby={visibleErrors.password ? "password-error" : undefined}
                 autoComplete="current-password"
-                className="mt-2 h-12 w-full rounded-md border border-white/12 bg-[#0a0a0a] px-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#7c72ff] focus:ring-3 focus:ring-[#7c72ff]/18"
+                className="mt-1.5 h-12 w-full rounded-xl border border-[#1a1a1a]/12 bg-white/80 px-4 text-sm text-[#1a1a1a] outline-none transition placeholder:text-[#1a1a1a]/35 focus:border-[#e2613a] focus:bg-white focus:ring-3 focus:ring-[#e2613a]/15"
                 placeholder="Your password"
               />
               <FieldError id="password-error" message={visibleErrors.password} />
             </div>
 
             {formError ? (
-              <p className="rounded-md border border-[#ff7b8d]/25 bg-[#ff7b8d]/10 px-4 py-3 text-sm font-medium text-[#ff9aaa]">
+              <p className="rounded-xl border border-[#d93829]/25 bg-[#d93829]/10 px-4 py-3 text-sm font-medium text-[#c42e20]">
                 {formError}
               </p>
             ) : null}
@@ -242,15 +243,15 @@ export default function LoginIndex() {
             <button
               type="submit"
               disabled={isSubmitting || isGoogleLoading}
-              className="h-12 w-full rounded-md bg-linear-to-r from-[#6f62ff] to-[#7a5cff] px-5 text-sm font-semibold text-white shadow-[0_14px_34px_rgba(111,98,255,0.32)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+              className="h-12 w-full rounded-xl bg-[#e2613a] px-5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(226,97,58,0.3)] transition hover:bg-[#c9522f] hover:shadow-[0_10px_24px_rgba(226,97,58,0.4)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer"
             >
               {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-white/45">
+          <p className="mt-6 text-center text-sm text-[#1a1a1a]/60">
             Don&apos;t have an account?{" "}
-            <Link href="/auth/signup" className="font-semibold text-[#8c84ff]">
+            <Link href="/auth/signup" className="font-semibold text-[#e2613a] hover:underline">
               Sign up
             </Link>
           </p>
